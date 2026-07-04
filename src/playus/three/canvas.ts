@@ -1,4 +1,3 @@
-import '../global.css';
 import { applyMobileSurfaceStyle, installTouchDefaultGuard } from '../mobile-interaction';
 import { type BackgroundConfig, getBackgroundColor, isTransparent } from '../types/background';
 

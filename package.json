@@ -1,9 +1,21 @@
 {
-  "name": "@playus/games-sdk",
+  "name": "@playus.club/games-sdk",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
-  "description": "Playus games SDK with runtime bridge, host simulator, and example games.",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dappsltd/playus-games-sdk.git"
+  },
+  "homepage": "https://github.com/dappsltd/playus-games-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/dappsltd/playus-games-sdk/issues"
+  },
+  "description": "Playus games SDK: native bridge, host handshake, sounds, haptics, overlays, seeded random, and engine helpers for Playus-compatible web game bundles.",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "author": "Dapps Pte Ltd (https://dapps.ltd)",
   "files": [
     "dist/sdk",
     "src/playus/*.css",
@@ -13,14 +25,6 @@
     ".": {
       "types": "./dist/sdk/index.d.ts",
       "import": "./dist/sdk/index.js"
-    },
-    "./native-bridge": {
-      "types": "./dist/sdk/native-bridge.d.ts",
-      "import": "./dist/sdk/native-bridge.js"
-    },
-    "./score": {
-      "types": "./dist/sdk/score.d.ts",
-      "import": "./dist/sdk/score.js"
     },
     "./phaser": {
       "types": "./dist/sdk/phaser/index.d.ts",
@@ -43,6 +47,7 @@
     "./global.css": "./src/playus/global.css"
   },
   "scripts": {
+    "prepublishOnly": "npm run build:sdk",
     "dev": "vite --host --port 8091",
     "dev:starter": "vite games/starter-game --config vite.config.ts --host --port 8090 --strictPort",
     "dev:phaser": "vite games/phaser-example --config vite.config.ts --host --port 8090 --strictPort",

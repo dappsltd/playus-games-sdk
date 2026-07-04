@@ -1,64 +1,82 @@
 # Game Contract
 
-The public contract is now the same runtime contract used by Playus-hosted game bundles.
+This is the runtime contract every Playus game bundle must follow. It is the same contract used by Playus-built games.
+
+## Game Design Rules
+
+Playus games are small, one-screen, portrait, touch-first games inside a native app:
+
+- One screen, one input pattern (tap, swipe, drag, hold, or rhythm), understandable from one short hint.
+- No start screen or menu. The tap-to-start overlay is the start screen.
+- No custom game-over or result screen. Call `finished(score)`; the Playus host shows the result and upload UI. End immediately on completion or failure. The only exception is 0.5–3 seconds of final feedback when the player must see something, for example the correct answer or the missed pattern.
+- No settings, pause menu, leaderboard, login, ads, or upload flow inside the game.
+- Keep in-game text minimal. The host already shows the game title and description before play; in-game text should be a short hint or essential state.
+- Endless score-attack games must keep ramping difficulty (speed, density, precision, pressure) so an impossible ceiling is eventually reached.
 
 ## Required Flow
 
 1. Configure the game id.
 2. Load required assets for the first playable frame.
-3. Call `nativeBridge.game.ready()`.
-4. The host calls `window.gameAPI.hostReady(...)`.
-5. The SDK replies with `hostReadyAck`.
-6. Wait for the player to start.
-7. Call `nativeBridge.game.started()`.
-8. Send `nativeBridge.game.score(score)` when live leaderboard score meaningfully changes.
-9. Call `nativeBridge.game.finished(finalScore)` exactly once.
+3. Call `nativeBridge.game.ready({ version })`.
+4. The host calls `window.gameAPI.hostReady(...)`; the SDK replies with `hostReadyAck` automatically.
+5. Show the tap-to-start overlay and wait for the player.
+6. Call `nativeBridge.game.started()` when the run actually begins.
+7. Send `nativeBridge.game.score(score)` when the live leaderboard score meaningfully changes.
+8. Call `nativeBridge.game.finished(finalScore)` exactly once.
+
+Recommended state guards — ignore duplicate starts and finishes:
 
 ```ts
-import { nativeBridge } from '@playus/games-sdk';
+import { nativeBridge } from '@playus.club/games-sdk';
 
 nativeBridge.configure({ gameId: 'my-game' });
 
+let hasStarted = false;
+let isGameOver = false;
+
 async function setup() {
   await loadRequiredAssets();
-  nativeBridge.game.ready();
+  nativeBridge.game.ready({ version: '1.0.0' });
 }
 
 function startRun() {
+  if (hasStarted || isGameOver) return;
+  hasStarted = true;
   nativeBridge.game.started();
 }
 
-function updateScore(score: number) {
-  nativeBridge.game.score(score);
-}
-
 function finishRun(finalScore: number) {
+  if (isGameOver) return;
+  isGameOver = true;
+  stopTimersAndGameplay();
   nativeBridge.game.finished(finalScore);
 }
 ```
 
-The SDK owns the low-level iOS/Android dispatch and host-ready acknowledgement. Do not hand-roll bridge posting.
+The SDK owns the low-level iOS/Android dispatch and the host-ready acknowledgement. Do not hand-roll bridge posting.
 
 ## Ready And HostReady
 
-Call `ready()` when the game can be shown and played without waiting on required assets.
+Call `ready()` when the DOM/canvas exists, required assets for the first playable frame are loaded, and the game can be shown.
 
-The Playus host then calls `window.gameAPI.hostReady(...)`. The SDK validates the handshake id and emits `hostReadyAck`. The local simulator checks this flow.
+- Import the SDK in your entry module, not behind a dynamic import. The host checks for `window.gameAPI` shortly after page load and fails the game if it is missing.
+- Hosts abort loads that take too long. Aim for `ready()` well under 5 seconds on a mid-range phone.
+- Send your bundle version in `ready({ version: '1.2.0' })`. Playus uses it to identify which delivered bundle is running in the field.
 
 Good `ready()` timing examples:
 
-- Phaser textures loaded in `preload()`.
-- Babylon/Three scene exists and the first renderable frame is ready.
+- Phaser: textures loaded in `preload()`, then `ready()` from `create()`.
+- Babylon/Three: the scene exists and the first frame has rendered (wait for shader/material compilation on 3D scenes).
 - Required JSON/config files have loaded.
 
-Do not call `ready()` while the first playable frame still depends on a required fetch.
+Do not call `ready()` while the first playable frame still depends on a pending fetch.
 
-## Started
+## Started And The Start Overlay
 
-Call `started()` when the run actually begins. Usually this is the first real player input after the start overlay.
+Call `started()` when the run actually begins — usually the first real player input after the start overlay is dismissed.
 
 ```ts
-import { createTapToStartOverlay } from '@playus/games-sdk';
+import { createTapToStartOverlay } from '@playus.club/games-sdk';
 
 createTapToStartOverlay({
   text: {
@@ -69,73 +87,63 @@ createTapToStartOverlay({
     it: 'Tocca per iniziare',
   },
   mode: 'dismiss-only',
+  touchHint: 'tap',
   onStart: startRun,
 });
 ```
 
-Use `dismiss-only` when the first tap should only close the hint. Use `pass-first-input` when that tap should also count as gameplay input.
+Decisions to make per game:
+
+- `mode: 'dismiss-only'` when the first tap should only close the hint; `mode: 'pass-first-input'` when that tap should also count as gameplay input (e.g. the first tap already hits a target).
+- Whether gameplay content may be visible behind the overlay. Fine for layout/search games; memory games should spawn content only after the hint is dismissed.
+- Gameplay timers, spawns, and scoring must start only after the hint is dismissed.
+- `touchHint` shows a small animated gesture hint (`'tap'`, `'tap-rapid'`, `'tap-sides'`, `'tap-timed'`, `'drag-horizontal'`, `'drag-free'`, `'swipe-4dir'`, `'swipe-horizontal'`, `'swipe-down'`). Use one only when it clearly matches the mechanic; pass `touchHint: false` otherwise.
 
 ## Score
 
-Every game must finish with one numeric score. You only send the numeric value through the bridge. Playus assigns the final score type and display rules in game metadata.
+Every game produces one numeric score. You only send the numeric value; Playus assigns the score type and display rules in game metadata.
 
-Supported Playus score types are:
+Supported score types: seconds, points, errors, percent, levels.
 
-- seconds
-- points
-- errors
-- percent
-- levels
+Rules:
 
-Send `score(score)` when the live score meaningfully changes. These updates are used for the live leaderboard, so they should be useful but not noisy.
-
-For time-based games, do not send a new millisecond value every frame. Send updates at sensible points instead, for example full seconds or another visible score step.
-
-Send score values in the real score unit:
-
-- seconds as seconds, not milliseconds: `500ms` is `0.5`, not `500`
-- points as points
-- errors as error counts
-- percentages as percent values
-- levels as level numbers
-
-Playus compares all leaderboard values with the same `>` operator and displays scores as positive values. If a smaller score is better, send it as a negative number:
+- Send values in the real score unit: seconds as seconds (`500ms` is `0.5`, not `500`), points as points, errors as counts, percent as percent, levels as level numbers.
+- Playus compares all scores with `>` and displays them as positive values. If a smaller score is better, send it as a negative number. Do not design games around real negative scores.
+- Live `score()` updates feed the live leaderboard shown above the game. Send them on meaningful changes only — whole units (whole seconds, points, levels), never every frame or every millisecond.
+- For time-based games, send `score(0)` right after `started()` so the player appears on the live leaderboard immediately, then update about once per whole second.
+- `finished(finalScore)` carries the exact final value, including fractions, even if live updates were rounded: live `-4`, final `-4.827`.
 
 ```ts
-const elapsedSeconds = 4.82;
-nativeBridge.game.score(-4);
-nativeBridge.game.finished(-elapsedSeconds);
+nativeBridge.game.started();
+nativeBridge.game.score(0);       // live rank shows immediately
+// during play, about once per second:
+nativeBridge.game.score(-4);      // whole seconds, negative = lower is better
+// at the end, exact:
+nativeBridge.game.finished(-4.827);
 ```
-
-Negative values are only the ranking format for lower-is-better games. Do not design games around real negative scores.
 
 ## Finished
 
-Call `finished(finalScore)` once when the run is over. Use the final exact score here, even if live `score()` updates were rounded or throttled.
+Call `finished(finalScore)` once when the run is over.
 
-```ts
-const elapsedSeconds = 4.827;
-
-nativeBridge.game.score(-4);
-nativeBridge.game.finished(-elapsedSeconds);
-```
-
-Playus handles the final result UI.
+- Stop timers, spawns, and gameplay updates before calling it.
+- Guard against duplicate finishes (the host ignores duplicates, but the game should not do extra work).
+- Playus shows the final result UI — do not build your own.
 
 ## Localization
 
-Game bundles must localize in-game text because Playus may host the bundle without source-code adaptation.
+Game bundles must localize all in-game text, because Playus hosts the bundle as delivered.
 
-The SDK reads `lang` from the URL hash:
+The host passes the language in the URL hash:
 
 ```txt
-#lang=en&d=1&groupgame=dev-abc123&playcontext=dev
+#lang=de&groupgame=abc123&playcontext=group-1
 ```
 
-Use `createTranslator` for game text:
+Use `createTranslator`:
 
 ```ts
-import { createTranslator, type TranslationDict } from '@playus/games-sdk';
+import { createTranslator, type TranslationDict } from '@playus.club/games-sdk';
 
 const translations = {
   hint: {
@@ -151,11 +159,11 @@ const t = createTranslator(translations);
 t('hint');
 ```
 
-Supported languages are `en`, `de`, `fr`, `es`, and `it`. English is the fallback.
+Required languages: `en`, `de`, `fr`, `es`, `it`. Unknown or missing languages fall back to English. Keep text short enough to fit German and French.
 
 ## Seeded Random
 
-Use seeded randomness when randomness changes gameplay, difficulty, layout, or scoring opportunity.
+All players of the same group game must get a fair, comparable round. Use seeded randomness whenever randomness affects gameplay, difficulty, layout, or scoring opportunity.
 
 ```ts
 import {
@@ -164,48 +172,135 @@ import {
   seededBetween,
   seededFloatBetween,
   seededShuffle,
-} from '@playus/games-sdk';
+} from '@playus.club/games-sdk';
 
 const random = createSeededRandom(getGameSeed());
-const x = seededBetween(random, 20, 300);
+const x = seededBetween(random, 20, 300);        // int in [20, 300]
 const speed = seededFloatBetween(random, 0.8, 1.4);
 const order = seededShuffle(random, ['a', 'b', 'c']);
 ```
 
-`getGameSeed()` combines `groupgame` and `playcontext`. Use `getGameSeed({ includePlayContext: false })` only when every try for the same group game should share the exact same layout.
-
-Cosmetic particles and tiny visual-only variations may use `Math.random()`.
+- `getGameSeed()` differs per try. Use `getGameSeed({ includePlayContext: false })` only when every try of the same group game should share the exact same layout.
+- `Math.random()` is fine for cosmetic effects (particles, tiny visual variation).
+- Rare exception: if replaying the same seed would let players peek at the answer and force-close to retry (e.g. a guessing game), unseeded randomness is allowed — but constrain outcomes to a comparable difficulty band and mention it when you deliver the bundle.
 
 ## Timing
 
-For custom game loops, clamp large frame gaps before applying movement or physics.
+Gameplay speed must depend on elapsed time, not frame count. Low FPS or WebView throttling must not make the game slower, easier, or change scoring.
+
+For custom game loops, clamp large frame gaps before applying movement, physics, spawning, or animation:
 
 ```ts
-import { clampGameplayDeltaMs, clampGameplayDeltaSeconds } from '@playus/games-sdk';
+import { clampGameplayDeltaMs, clampGameplayDeltaSeconds } from '@playus.club/games-sdk';
 
 const deltaMs = clampGameplayDeltaMs(now - lastFrameAt);
 const deltaSeconds = clampGameplayDeltaSeconds(deltaMs / 1000);
 ```
 
-## Sounds And Haptics
+Choose timer behavior from the mechanic:
 
-Sounds and haptics are optional, but useful for touch feedback.
+- Survival / longer-is-better: backgrounded or throttled time must not add score. Pause on `visibilitychange`.
+- Reaction / faster-is-better: keep the timer on real elapsed time so locking the phone cannot pause the clock.
+
+There are no native pause/resume callbacks. Use browser signals like `visibilitychange` when the game must stay fair across backgrounding.
+
+## Sounds
+
+Play all audio through the SDK sound manager — it handles the host mute state and the lazy AudioContext.
+
+Shared Playus sounds load from the native app (with a CDN fallback in the browser):
 
 ```ts
-import { nativeBridge, sound } from '@playus/games-sdk';
+import { sound } from '@playus.club/games-sdk';
 
 await sound.preload(['positive-input', 'level-complete']);
-sound.play('positive-input', { volume: 0.5 });
-
-nativeBridge.device.haptic('tap');
-nativeBridge.device.haptic('success');
+sound.play('positive-input', { volume: 0.8 });
 ```
 
-The host can call `window.gameAPI.setMuted(true)`. The SDK sound manager handles this automatically.
+Conventions:
+
+| Moment | Sounds |
+| --- | --- |
+| Correct input / scoring | `positive-input`, `pop-happy`, `pop-sharp`, `pop-bubble` |
+| Level or round complete | `level-complete`, `level-up` |
+| Wrong input / failure | `negative-input`, `game-warning` |
+| Collision / impact | `wall-hit`, `wall-hit-2`, `hit-analog` |
+
+Custom sounds: bundle your own files with the game and play them through the same manager — host mute applies automatically:
+
+```ts
+const popUrl = new URL('./assets/pop.mp3', import.meta.url).toString();
+
+await sound.preloadUrl(popUrl);
+sound.playUrl(popUrl, { volume: 0.6 });
+```
+
+Own audio engine (Phaser sound, Babylon audio, ...): subscribe to the host mute state instead. The listener fires immediately with the current state and again on every change:
+
+```ts
+sound.onEnabledChange((enabled) => {
+  game.sound.mute = !enabled;
+});
+```
+
+Preload only the sounds needed in the first few seconds. The AudioContext is created lazily — do not create your own.
+
+## Haptics
+
+Haptics are supplemental touch feedback, not required:
+
+```ts
+nativeBridge.device.haptic('tap');
+```
+
+Conventions: `tap` for successful input, `soft` for small feedback, `failed` for game-ending mistakes, `success` or `confetti` for completion. `release` and `startLoading` exist for special cases.
+
+## Containers And Layout
+
+Games run in a fixed portrait viewport clipped by the host. All UI must fit inside it; do not rely on safe-area insets.
+
+Use the SDK containers instead of building your own root layout:
+
+- Phaser: `createPhaserParent`, `BASE_PHASER_CONFIG`, `getPhaserBackgroundConfig` from `@playus.club/games-sdk/phaser`.
+- Babylon: `createCanvas`, `getEngineOptions`, `getClearColor` from `@playus.club/games-sdk/babylon`.
+- Three / custom WebGL: `createThreeCanvas`, `getThreeRendererOptions` from `@playus.club/games-sdk/three`.
+- Plain DOM/canvas: import `@playus.club/games-sdk/styles.css` and build inside a fixed-position root (see the starter example).
+
+Backgrounds use one shared config:
+
+```ts
+const background = { transparent: false, color: '#1a1b2e' } as const;
+```
+
+Transparent backgrounds let the native app background show through; a solid color is cheaper to render. Prefer solid when the game visually owns the whole screen.
+
+Fonts: `styles.css` provides `Unbounded` (big scores, hints, titles), `Space Grotesk` and `Quicksand` (secondary text). They load from the native app, with a CDN fallback in the browser. Custom fonts are fine too — bundle them with your game (woff2, keep them small) and load them with your own `@font-face`.
+
+## Debug Mode
+
+The host appends `d=1` to the URL hash in debug builds. Use it for FPS counters and debug info:
+
+```ts
+import { createDebugOverlay, isDebugMode, getRendererInfo } from '@playus.club/games-sdk';
+
+if (isDebugMode()) {
+  const overlay = createDebugOverlay(document.body);
+  overlay.setRenderer(getRendererInfo().renderer);
+  overlay.show();
+}
+```
+
+Never show debug UI without the flag.
+
+## Optional Host Integrations
+
+- `nativeBridge.game.setColorConfig({...})` updates the native host colors around the game. Use it only when the game changes its visual theme at runtime.
+- `nativeBridge.game.message(text, duration?)` shows a native toast on iOS; Android currently ignores it. Do not use it for required instructions.
+- `nativeBridge.game.debugMessage(text)` is dev-only feedback.
 
 ## Error
 
-Use `error({ code, message })` only when the game cannot initialize or cannot continue because of a real runtime failure.
+Use `error({ code, message })` only when the game cannot initialize or cannot continue because of a real runtime failure. Do not emit errors for recoverable gameplay conditions.
 
 ```ts
 nativeBridge.game.error({

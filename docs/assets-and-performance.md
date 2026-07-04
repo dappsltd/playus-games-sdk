@@ -15,7 +15,7 @@ const playerUrl = new URL('./assets/player.png', import.meta.url);
 For Phaser, load required images in `preload()`, then call `ready()` from `create()`.
 
 ```ts
-import { nativeBridge } from '@playus/games-sdk';
+import { nativeBridge } from '@playus.club/games-sdk';
 
 preload() {
   this.load.image('player', new URL('./assets/player.png', import.meta.url).toString());
@@ -96,5 +96,14 @@ Keep the first playable frame fast:
 - stop work when the game is finished or not visible
 - test on a real mobile device when possible, especially Android
 - test the production build in the Playus host simulator, not only your framework dev server
+
+Keep frames stable during play:
+
+- clamp delta time before applying movement or physics (see the game contract's Timing section)
+- avoid allocating objects in hot update/render loops; pool repeated objects, particles, and projectiles
+- cap device pixel ratio for WebGL, usually `Math.min(window.devicePixelRatio || 1, 2)`
+- use `requestAnimationFrame` for animation and `performance.now()` for timers; animate transforms/opacity, not layout
+- destroy or reuse tweens, timers, meshes, textures, DOM nodes, and event listeners
+- throttle debug/FPS text updates to about every 300ms
 
 If an engine starts more slowly than the game takes to understand, it is probably too heavy.

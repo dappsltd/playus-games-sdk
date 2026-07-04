@@ -1,4 +1,3 @@
-import '../global.css';
 import { applyMobileSurfaceStyle, installTouchDefaultGuard } from '../mobile-interaction';
 import { isDebugMode } from '../overlay/debug';
 import { type BackgroundConfig, isTransparent, getBackgroundColor } from '../types/background';

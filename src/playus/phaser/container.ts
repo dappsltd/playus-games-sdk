@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import '../global.css';
 import { applyMobileSurfaceStyle } from '../mobile-interaction';
 import { isDebugMode } from '../overlay/debug';
 import { type BackgroundConfig, isTransparent, getBackgroundColor } from '../types/background';

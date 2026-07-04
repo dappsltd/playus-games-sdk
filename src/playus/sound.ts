@@ -27,30 +27,90 @@ export type SoundPlayOptions = {
   volume?: number;
 };
 
+const CDN_BASE = 'https://pub-f2838cca4376431f9c696446d4a3e503.r2.dev';
+
+function sharedSoundUrls(id: SoundId): string[] {
+  const filename = `${id}.mp3`;
+  return [
+    `native://sounds/${filename}`,
+    `/__native__/sounds/${filename}`,
+    `${CDN_BASE}/sounds/${filename}`,
+  ];
+}
+
 class SoundManager {
-  private static readonly CDN_BASE = 'https://pub-f2838cca4376431f9c696446d4a3e503.r2.dev';
-
   private audioContext: AudioContext | null = null;
-  private buffers: Map<SoundId, AudioBuffer> = new Map();
-  private loading: Map<SoundId, Promise<AudioBuffer | null>> = new Map();
+  private buffers: Map<string, AudioBuffer> = new Map();
+  private loading: Map<string, Promise<AudioBuffer | null>> = new Map();
   private enabled = true;
-
-  unlock(): void {
-    this.getContext();
-  }
+  private enabledListeners: Array<(enabled: boolean) => void> = [];
 
   async preload(ids: SoundId | SoundId[]): Promise<void> {
     const idArray = Array.isArray(ids) ? ids : [ids];
-    await Promise.all(idArray.map((id) => this.loadSound(id)));
+    await Promise.all(idArray.map((id) => this.load(id, sharedSoundUrls(id))));
+  }
+
+  /** Preload custom sound files bundled with the game. */
+  async preloadUrl(sources: string | URL | Array<string | URL>): Promise<void> {
+    const list = Array.isArray(sources) ? sources : [sources];
+    await Promise.all(list.map((source) => this.load(String(source), [String(source)])));
   }
 
   play(id: SoundId, options: SoundPlayOptions = {}): void {
+    this.playFrom(id, sharedSoundUrls(id), options);
+  }
+
+  /**
+   * Play a custom sound file bundled with the game. Goes through the same
+   * manager as shared sounds, so the host mute state applies automatically.
+   */
+  playUrl(source: string | URL, options: SoundPlayOptions = {}): void {
+    this.playFrom(String(source), [String(source)], options);
+  }
+
+  setEnabled(enabled: boolean): void {
+    if (enabled === this.enabled) return;
+
+    this.enabled = enabled;
+    for (const listener of this.enabledListeners) listener(enabled);
+  }
+
+  isEnabled(): boolean {
+    return this.enabled;
+  }
+
+  /**
+   * Subscribe to the host mute state, e.g. to mute your own audio engine.
+   * Calls the listener immediately with the current state and again on every
+   * change. Returns an unsubscribe function.
+   */
+  onEnabledChange(listener: (enabled: boolean) => void): () => void {
+    this.enabledListeners.push(listener);
+    listener(this.enabled);
+
+    return () => {
+      this.enabledListeners = this.enabledListeners.filter((candidate) => candidate !== listener);
+    };
+  }
+
+  dispose(): void {
+    if (this.audioContext) {
+      this.audioContext.close().catch(() => {});
+      this.audioContext = null;
+    }
+
+    this.buffers.clear();
+    this.loading.clear();
+    this.enabledListeners = [];
+  }
+
+  private playFrom(key: string, urls: string[], options: SoundPlayOptions): void {
     if (!this.enabled) return;
 
     const context = this.getContext();
     if (!context) return;
 
-    this.loadSound(id).then((buffer) => {
+    this.load(key, urls).then((buffer) => {
       if (!buffer || !this.audioContext) return;
 
       try {
@@ -68,27 +128,9 @@ class SoundManager {
 
         source.start(0);
       } catch (error) {
-        console.warn(`SoundManager: Failed to play ${id}:`, error);
+        console.warn(`SoundManager: Failed to play ${key}:`, error);
       }
     });
-  }
-
-  setEnabled(enabled: boolean): void {
-    this.enabled = enabled;
-  }
-
-  isEnabled(): boolean {
-    return this.enabled;
-  }
-
-  dispose(): void {
-    if (this.audioContext) {
-      this.audioContext.close().catch(() => {});
-      this.audioContext = null;
-    }
-
-    this.buffers.clear();
-    this.loading.clear();
   }
 
   private getContext(): AudioContext | null {
@@ -109,27 +151,20 @@ class SoundManager {
     return this.audioContext;
   }
 
-  private async loadSound(id: SoundId): Promise<AudioBuffer | null> {
-    if (this.buffers.has(id)) return this.buffers.get(id)!;
-    if (this.loading.has(id)) return this.loading.get(id)!;
+  private async load(key: string, urls: string[]): Promise<AudioBuffer | null> {
+    if (this.buffers.has(key)) return this.buffers.get(key)!;
+    if (this.loading.has(key)) return this.loading.get(key)!;
 
     const context = this.getContext();
     if (!context) return null;
 
-    const loadPromise = this.fetchAndDecodeSound(context, id);
-    this.loading.set(id, loadPromise);
+    const loadPromise = this.fetchAndDecode(context, key, urls);
+    this.loading.set(key, loadPromise);
 
-    return loadPromise.finally(() => this.loading.delete(id));
+    return loadPromise.finally(() => this.loading.delete(key));
   }
 
-  private async fetchAndDecodeSound(context: AudioContext, id: SoundId): Promise<AudioBuffer | null> {
-    const filename = `${id}.mp3`;
-    const urls = [
-      `native://sounds/${filename}`,
-      `/__native__/sounds/${filename}`,
-      `${SoundManager.CDN_BASE}/sounds/${filename}`,
-    ];
-
+  private async fetchAndDecode(context: AudioContext, key: string, urls: string[]): Promise<AudioBuffer | null> {
     for (const url of urls) {
       try {
         const response = await fetch(url);
@@ -137,14 +172,14 @@ class SoundManager {
 
         const arrayBuffer = await response.arrayBuffer();
         const audioBuffer = await context.decodeAudioData(arrayBuffer);
-        this.buffers.set(id, audioBuffer);
+        this.buffers.set(key, audioBuffer);
         return audioBuffer;
       } catch {
         continue;
       }
     }
 
-    console.warn(`SoundManager: Could not load ${id}`);
+    console.warn(`SoundManager: Could not load ${key}`);
     return null;
   }
 }

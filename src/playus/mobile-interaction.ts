@@ -60,13 +60,6 @@ export function installTouchDefaultGuard<T extends HTMLElement>(element: T): T {
   return element;
 }
 
-// Backward-compatible names for the earlier prototype. These no longer install
-// any pointer/touch preventDefault listeners.
-export const installMobileInteractionPolicy = installMobileSelectionPolicy;
-export function applyMobileInteractionPolicy<T extends HTMLElement>(element: T, _options?: unknown): T {
-  return applyMobileSurfaceStyle(element);
-}
-
 function applySelectionStyle(element: HTMLElement) {
   const style = element.style as WebkitStyle;
   style.userSelect = 'none';

@@ -2,7 +2,6 @@ export {
   ColorConfig,
   NativeBridge,
   nativeBridge,
-  playus,
   roundScoreForBridge,
 } from './bridge';
 export { createSeededRandom, seededBetween, seededFloatBetween, seededShuffle } from './random';
@@ -15,9 +14,7 @@ export type { LocalizedText, TapToStartMode, TapToStartOverlay } from './tap-to-
 export { sound } from './sound';
 export type { SoundId, SoundPlayOptions } from './sound';
 export {
-  applyMobileInteractionPolicy,
   applyMobileSurfaceStyle,
-  installMobileInteractionPolicy,
   installMobileSelectionPolicy,
   installTouchDefaultGuard,
 } from './mobile-interaction';

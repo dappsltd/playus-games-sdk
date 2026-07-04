@@ -1,14 +1,24 @@
 # Contributing Or Delivering A Game
 
-Playus can review either a source-code PR in this repo or a pre-built static game bundle. Partner teams usually deliver only the built bundle.
+Playus accepts games as plain source code or as a pre-built static bundle — sent privately or as a PR in this repo.
 
-## Preferred Partner Flow
+## Source Or Bundle
+
+We prefer plain source code. It lets us review the game properly, apply performance tuning with our own tools, and ship urgent fixes ourselves instead of waiting for a publisher update.
+
+If you cannot share source (copyright or other reasons), a built bundle is fine — the SDK exists exactly so a pre-built bundle works out of the box in the Playus apps.
+
+## Partner Flow
 
 1. Build your game in your own repository.
-2. Install and use `@playus/games-sdk`.
-3. Test the game in the local Playus host simulator.
-4. Build a static production bundle.
-5. Send Playus the bundle plus the required game metadata.
+2. Install and use `@playus.club/games-sdk`.
+3. Build a static production bundle with relative asset paths (Vite: `base: './'`).
+4. Test the built bundle in the local Playus host simulator (copy it into `public/<game-id>/`, see the README).
+5. Send Playus the bundle (or your source) plus the required game metadata from the submission checklist.
+
+## What Happens After Acceptance
+
+Accepted games are built by Playus (when delivered as source), zipped, signed, and hosted. Bundles may be cached inside the apps and are publicly accessible and downloadable — always in built form, never as raw source. Do not put anything into your game that you would not ship publicly.
 
 ## Source PR Flow
 
@@ -28,7 +38,7 @@ If you are contributing source directly, create a folder under `games/<your-game
 ## What Not To Include
 
 - Login, accounts, analytics, ads, payments, or backend calls required for gameplay.
-- A custom leaderboard, upload flow, or final result screen.
+- A custom start screen, menu, pause screen, leaderboard, upload flow, or final result screen.
 - Required remote runtime data fetches.
 - Heavy engine exports unless Playus agreed to the tradeoff first.
 - Obfuscated or minified source code when submitting source.

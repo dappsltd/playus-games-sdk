@@ -159,8 +159,8 @@ export class NativeBridge {
     }
   }
 
-  // Low-level post (generic) – posts to native container
-  post(type: string, payload?: any): boolean {
+  // Low-level post – games use the typed `game`/`device` APIs instead.
+  private post(type: string, payload?: any): boolean {
     return this.postDetailed(type, payload).success;
   }
 
@@ -195,9 +195,6 @@ export class NativeBridge {
       },
       setMuted(muted: boolean) {
         sound.setEnabled(!muted);
-      },
-      unlockAudio() {
-        sound.unlock();
       },
     };
   }

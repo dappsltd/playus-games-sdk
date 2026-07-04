@@ -1,5 +1,7 @@
 node_modules/
 dist/
+# Local drop zone for testing built partner bundles in the simulator
+public/
 AGENTS.md
 .DS_Store
 .env

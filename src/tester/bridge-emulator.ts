@@ -47,6 +47,9 @@ export class BridgeEmulator {
   private score: number | null = null;
   private pendingHandshakeId: string | null = null;
   private ackTimeout: ReturnType<typeof setTimeout> | null = null;
+  // True when hostReady could not reach the game (e.g. cross-origin game URL).
+  // Handshake follow-up checks are skipped then instead of producing false warnings.
+  private hostReadyUndeliverable = false;
 
   constructor(private readonly options: BridgeEmulatorOptions) {
     window.addEventListener('message', this.handleMessage);
@@ -70,6 +73,7 @@ export class BridgeEmulator {
     this.hasFinished = false;
     this.score = null;
     this.pendingHandshakeId = null;
+    this.hostReadyUndeliverable = false;
     this.notify();
   }
 
@@ -139,7 +143,7 @@ export class BridgeEmulator {
 
     if (type === 'gameStarted') {
       if (!this.hasReady) return 'started() was sent before ready().';
-      if (!this.hasHostReadyAck) return 'started() was sent before hostReadyAck.';
+      if (!this.hasHostReadyAck && !this.hostReadyUndeliverable) return 'started() was sent before hostReadyAck.';
       if (this.hasStarted) return 'started() was sent more than once.';
       if (this.hasFinished) return 'started() was sent after finished().';
       this.hasStarted = true;
@@ -160,7 +164,7 @@ export class BridgeEmulator {
       if (!Number.isFinite(score)) return 'finished() must send a finite final score.';
       this.score = score;
       if (!this.hasReady) return 'finished() was sent before ready().';
-      if (!this.hasHostReadyAck) return 'finished() was sent before hostReadyAck.';
+      if (!this.hasHostReadyAck && !this.hostReadyUndeliverable) return 'finished() was sent before hostReadyAck.';
       if (this.hasFinished) return 'finished() was sent more than once.';
       this.hasFinished = true;
       return undefined;
@@ -194,12 +198,17 @@ export class BridgeEmulator {
 
     const result = this.options.sendHostReady(payload);
     if (!result.success) {
+      this.hostReadyUndeliverable = true;
+      this.pendingHandshakeId = null;
+      this.cancelAckTimeout();
       this.addEvent({
         type: 'hostReadyFailed',
         direction: 'host-to-game',
         timestamp: Date.now(),
         payload: { ...payload, error: result.error ?? 'unknown' },
-        warning: result.error ?? 'hostReady failed.',
+        warning: result.error === 'host_ready_cross_origin_blocked'
+          ? 'hostReady cannot reach a cross-origin game URL. Handshake checks are skipped — copy your built bundle into public/<game-id>/ and load /<game-id>/ to test the full flow.'
+          : result.error ?? 'hostReady failed.',
       });
     }
   }

@@ -15,6 +15,8 @@ export function getGameSeed(options?: { includePlayContext?: boolean }): string 
 
   if (options?.includePlayContext === false) return groupgame;
 
+  // Matches the seed format of existing Playus games (null becomes "null"),
+  // so a game keeps its layouts when migrating onto this SDK.
   const playcontext = getUrlParam('playcontext');
-  return `${groupgame}.${playcontext ?? ''}`;
+  return `${groupgame}.${playcontext}`;
 }

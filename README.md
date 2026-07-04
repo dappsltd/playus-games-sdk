@@ -6,9 +6,19 @@
 
 SDK and local host simulator for building Playus-compatible web games.
 
-Partners can build games in their own repository and deliver a pre-built static bundle to Playus. The bundle must already use the Playus SDK runtime so it works inside the Playus iOS and Android WebViews without a source-code adaptation step.
+Partners build games in their own repository and deliver a pre-built static bundle to Playus. The bundle must already use the Playus SDK runtime so it works inside the Playus iOS and Android WebViews without a source-code adaptation step.
 
-## Quick Start
+## Getting The SDK
+
+```sh
+npm install @playus.club/games-sdk
+```
+
+The npm package contains the runtime only. For the local host simulator and the example games, clone this repository (see Quick Start below).
+
+The SDK speaks Playus bridge protocol v3. Note the SDK version you built with — it is part of the bundle delivery metadata.
+
+## Quick Start (this repo)
 
 ```sh
 npm install
@@ -25,21 +35,15 @@ The simulator loads the included examples and validates the real Playus bridge f
 
 ## SDK Usage
 
-Install the SDK source that Playus provides for your project. The package name is:
-
-```txt
-@playus/games-sdk
-```
-
-Minimal game setup:
+Import the SDK in your entry module (not behind a dynamic import — the host verifies the bridge exists right after page load):
 
 ```ts
 import {
   createTapToStartOverlay,
   nativeBridge,
   sound,
-} from '@playus/games-sdk';
-import '@playus/games-sdk/styles.css';
+} from '@playus.club/games-sdk';
+import '@playus.club/games-sdk/styles.css';
 
 nativeBridge.configure({ gameId: 'your-game-id' });
 
@@ -59,7 +63,7 @@ createTapToStartOverlay({
 });
 
 await sound.preload(['positive-input']);
-nativeBridge.game.ready();
+nativeBridge.game.ready({ version: '1.0.0' });
 ```
 
 When the run ends:
@@ -68,15 +72,32 @@ When the run ends:
 nativeBridge.game.finished(finalScore);
 ```
 
+Engine helpers: `@playus.club/games-sdk/phaser`, `@playus.club/games-sdk/babylon`, and `@playus.club/games-sdk/three` provide ready-made containers and configs. See [the game contract](docs/game-contract.md) for the full runtime rules.
+
 ## Examples
 
-- `games/starter-game`: plain TypeScript starter.
-- `games/phaser-example`: Phaser setup using `@playus/games-sdk/phaser`.
-- `games/babylon-example`: Babylon.js setup using `@playus/games-sdk/babylon`.
+Three small complete games. All follow the full [game contract](docs/game-contract.md) with localized overlays, sounds, and haptics — and each shows a different feature mix:
+
+| | `games/starter-game` (plain TS) | `games/phaser-example` | `games/babylon-example` |
+| --- | --- | --- | --- |
+| Game | Hit 5 targets fast | Pop bubbles for 20s | Tap the odd cube, endless levels |
+| Score | Time: negative seconds, `score(0)` at start, whole-second live updates, exact fractional final | Points with live updates | Levels with an endless difficulty ramp |
+| Seeded random | New layout per try | Same pattern every try (`includePlayContext: false`) | `seededShuffle` + float ranges |
+| Start overlay | `dismiss-only`, default tap hint | `dismiss-only`, `tap-rapid` hint | `pass-first-input`, board visible behind hint |
+| Also shows | Real-time score timer (no clamping) | Delta clamping, countdown clock, warning sound | Transparent background, debug overlay, DPR cap, brief end feedback, `error()` |
+
+## Testing Your Own Bundle
+
+The simulator's full handshake only works same-origin. To test your built bundle:
+
+1. Copy your build output into `public/<your-game-id>/` in this repo.
+2. Run `npm run dev` and enter `/<your-game-id>/` as the Game URL in the simulator.
+
+Cross-origin URLs (e.g. your own dev server) still show outgoing events, but `hostReady` cannot be delivered — the simulator marks this and skips handshake checks.
 
 ## Delivering A Bundle
 
-Playus expects a static web bundle:
+Plain source delivery is preferred when you can share it — see [CONTRIBUTING.md](CONTRIBUTING.md). For bundle delivery, Playus expects a static web bundle:
 
 ```txt
 dist/
@@ -87,8 +108,9 @@ dist/
 The bundle must:
 
 - run from a static host path with no backend required
-- use relative asset URLs or bundled imports
+- reference all assets **relatively** — with Vite set `base: './'` and check that the built `index.html` uses `./assets/...`, not `/assets/...` (Playus hosts serve bundles from a subpath)
 - include the Playus SDK in the compiled output
+- send its bundle version via `ready({ version })`
 - call `ready()` only after required assets for the first playable frame are loaded
 - send meaningful live `score()` updates
 - call `finished(finalScore)` exactly once
@@ -98,6 +120,10 @@ Playus handles signing, hosting, game metadata, score type assignment, leaderboa
 
 ## Docs
 
-- [Game contract](docs/game-contract.md)
+- [Game contract](docs/game-contract.md) — the runtime rules every bundle must follow
 - [Assets and mobile performance](docs/assets-and-performance.md)
 - [Submission checklist](docs/submission-checklist.md)
+
+## License
+
+Source-available under the [Playus Games SDK License](LICENSE.md): free to use for building and delivering games for the Playus apps; not for use in other apps or platforms.
