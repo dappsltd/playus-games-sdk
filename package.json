@@ -1,6 +1,6 @@
 {
   "name": "@playus.club/games-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -19,6 +19,7 @@
   "files": [
     "dist/sdk",
     "src/playus/*.css",
+    "docs",
     "README.md"
   ],
   "exports": {
@@ -27,15 +28,15 @@
       "import": "./dist/sdk/index.js"
     },
     "./phaser": {
-      "types": "./dist/sdk/phaser/index.d.ts",
+      "types": "./dist/sdk/engines/phaser/index.d.ts",
       "import": "./dist/sdk/phaser.js"
     },
     "./babylon": {
-      "types": "./dist/sdk/babylon/index.d.ts",
+      "types": "./dist/sdk/engines/babylon/index.d.ts",
       "import": "./dist/sdk/babylon.js"
     },
     "./three": {
-      "types": "./dist/sdk/three/index.d.ts",
+      "types": "./dist/sdk/engines/three/index.d.ts",
       "import": "./dist/sdk/three.js"
     },
     "./overlay": {
@@ -52,8 +53,9 @@
     "dev:starter": "vite games/starter-game --config vite.config.ts --host --port 8090 --strictPort",
     "dev:phaser": "vite games/phaser-example --config vite.config.ts --host --port 8090 --strictPort",
     "dev:babylon": "vite games/babylon-example --config vite.config.ts --host --port 8090 --strictPort",
+    "dev:three": "vite games/three-example --config vite.config.ts --host --port 8090 --strictPort",
     "build:sdk": "vite build --config vite.sdk.config.ts && tsc -p tsconfig.sdk.json",
-    "build": "tsc --noEmit && npm run build:sdk && vite build --outDir dist/tester && vite build games/starter-game --config vite.config.ts --outDir ../../dist/games/starter-game --emptyOutDir false && vite build games/phaser-example --config vite.config.ts --outDir ../../dist/games/phaser-example --emptyOutDir false && vite build games/babylon-example --config vite.config.ts --outDir ../../dist/games/babylon-example --emptyOutDir false",
+    "build": "tsc --noEmit && npm run build:sdk && vite build --outDir dist/tester && vite build games/starter-game --config vite.config.ts --outDir ../../dist/games/starter-game --emptyOutDir false && vite build games/phaser-example --config vite.config.ts --outDir ../../dist/games/phaser-example --emptyOutDir false && vite build games/babylon-example --config vite.config.ts --outDir ../../dist/games/babylon-example --emptyOutDir false && vite build games/three-example --config vite.config.ts --outDir ../../dist/games/three-example --emptyOutDir false",
     "preview": "vite preview --host --port 4173"
   },
   "peerDependencies": {
@@ -70,7 +72,9 @@
   },
   "devDependencies": {
     "@babylonjs/core": "^8.31.2",
+    "@types/three": "^0.169.0",
     "phaser": "^3.80.0",
+    "three": "^0.169.0",
     "typescript": "^5.9.2",
     "vite": "^8.1.0"
   }

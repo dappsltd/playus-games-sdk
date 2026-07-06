@@ -33,6 +33,8 @@ http://localhost:8091
 
 The simulator loads the included examples and validates the real Playus bridge flow, including `ready`, `hostReady`, `hostReadyAck`, live score updates, finish events, language params, debug mode, and host mute callbacks.
 
+Porting an existing game? Start with the [Partner game porting template](docs/partner-game-porting-template.md). It summarizes the Playus-specific decisions around app-shell removal, start flow, scoring, assets, audio, fairness, responsiveness, and delivery notes.
+
 ## SDK Usage
 
 Import the SDK in your entry module (not behind a dynamic import — the host verifies the bridge exists right after page load):
@@ -74,17 +76,23 @@ nativeBridge.game.finished(finalScore);
 
 Engine helpers: `@playus.club/games-sdk/phaser`, `@playus.club/games-sdk/babylon`, and `@playus.club/games-sdk/three` provide ready-made containers and configs. See [the game contract](docs/game-contract.md) for the full runtime rules.
 
+## Sound Previews
+
+The repo includes raw shared game sound previews in `dev-assets/sounds/games/` so developers can audition the Playus sound palette before choosing IDs such as `positive-input`, `pop-sharp`, or `pop-multi-down`.
+
+Those files are repository-only reference assets. They are excluded from the npm package; games should use the SDK sound ids through `sound.preload(...)` and `sound.play(...)`.
+
 ## Examples
 
-Three small complete games. All follow the full [game contract](docs/game-contract.md) with localized overlays, sounds, and haptics — and each shows a different feature mix:
+Four small complete games. All follow the full [game contract](docs/game-contract.md) with localized overlays, sounds, and haptics — and each shows a different feature mix:
 
-| | `games/starter-game` (plain TS) | `games/phaser-example` | `games/babylon-example` |
-| --- | --- | --- | --- |
-| Game | Hit 5 targets fast | Pop bubbles for 20s | Tap the odd cube, endless levels |
-| Score | Time: negative seconds, `score(0)` at start, whole-second live updates, exact fractional final | Points with live updates | Levels with an endless difficulty ramp |
-| Seeded random | New layout per try | Same pattern every try (`includePlayContext: false`) | `seededShuffle` + float ranges |
-| Start overlay | `dismiss-only`, default tap hint | `dismiss-only`, `tap-rapid` hint | `pass-first-input`, board visible behind hint |
-| Also shows | Real-time score timer (no clamping) | Delta clamping, countdown clock, warning sound | Transparent background, debug overlay, DPR cap, brief end feedback, `error()` |
+| | `games/starter-game` (plain TS) | `games/phaser-example` | `games/babylon-example` | `games/three-example` |
+| --- | --- | --- | --- | --- |
+| Game | Hit 5 targets fast | Pop bubbles for 20s | Tap the odd cube, endless levels | Tap the cube only when it turns green |
+| Score | Time: negative seconds, `score(0)` at start, whole-second live updates, exact fractional final | Points with live updates | Levels with an endless difficulty ramp | Points, endless shrinking-window ramp |
+| Seeded random | New layout per try | Same pattern every try (`includePlayContext: false`) | `seededShuffle` + float ranges | Seeded per-try reaction rhythm |
+| Start overlay | `dismiss-only`, default tap hint | `dismiss-only`, `tap-rapid` hint | `pass-first-input`, board visible behind hint | `dismiss-only`, `tap` hint |
+| Also shows | Real-time score timer (no clamping) | Delta clamping, countdown clock, warning sound | Transparent background, debug overlay, DPR cap, brief end feedback, `error()` | Solid background + `setClearColor`, raycaster picking, DPR cap, resize, delta clamping |
 
 ## Testing Your Own Bundle
 
@@ -121,6 +129,7 @@ Playus handles signing, hosting, game metadata, score type assignment, leaderboa
 ## Docs
 
 - [Game contract](docs/game-contract.md) — the runtime rules every bundle must follow
+- [Partner game porting template](docs/partner-game-porting-template.md) — checklist for converting an existing web game into a Playus-compatible bundle
 - [Assets and mobile performance](docs/assets-and-performance.md)
 - [Submission checklist](docs/submission-checklist.md)
 

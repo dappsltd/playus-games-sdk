@@ -1,6 +1,6 @@
-import { applyMobileSurfaceStyle, installTouchDefaultGuard } from '../mobile-interaction';
-import { isDebugMode } from '../overlay/debug';
-import { type BackgroundConfig, isTransparent, getBackgroundColor } from '../types/background';
+import { type BackgroundConfig, isTransparent, getBackgroundColor } from '../../background';
+import { isDebugMode } from '../../overlay/debug';
+import { applyMobileSurfaceStyle, installTouchDefaultGuard } from '../../webview/mobile-interaction';
 import { Color4 } from '@babylonjs/core/Maths/math.color';
 
 export type CanvasOptions = {

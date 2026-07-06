@@ -9,19 +9,19 @@ export { getGameSeed, getUrlParam } from './url-params';
 export { clampGameplayDeltaMs, clampGameplayDeltaSeconds } from './timing';
 export { createTranslator, getCurrentLanguage } from './i18n';
 export type { Language, TranslationDict } from './i18n';
-export { createTapToStartOverlay } from './tap-to-start';
-export type { LocalizedText, TapToStartMode, TapToStartOverlay } from './tap-to-start';
+export { createTapToStartOverlay } from './overlay/tap-to-start';
+export type { LocalizedText, TapToStartMode, TapToStartOverlay } from './overlay/tap-to-start';
 export { sound } from './sound';
 export type { SoundId, SoundPlayOptions } from './sound';
 export {
   applyMobileSurfaceStyle,
   installMobileSelectionPolicy,
   installTouchDefaultGuard,
-} from './mobile-interaction';
+} from './webview/mobile-interaction';
 export { createDebugOverlay, getRendererInfo, isDebugMode } from './overlay/debug';
 export { createTouchHint } from './overlay/touch-hint';
 export type { DebugOverlay } from './overlay/debug';
 export type { TouchHint, TouchHintType } from './overlay/touch-hint';
-export type { BackgroundConfig } from './types/background';
-export { DEFAULT_BACKGROUND, getBackgroundColor, isTransparent } from './types/background';
-export { formatMillisecondsAsClock, formatSecondsAsClock } from './helpers/timeFormat';
+export type { BackgroundConfig } from './background';
+export { DEFAULT_BACKGROUND, getBackgroundColor, isTransparent } from './background';
+export { formatMillisecondsAsClock, formatSecondsAsClock } from './time-format';

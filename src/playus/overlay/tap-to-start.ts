@@ -1,5 +1,5 @@
-import { getCurrentLanguage, type Language } from './i18n';
-import { createTouchHint, type TouchHint, type TouchHintType } from './overlay/touch-hint';
+import { getCurrentLanguage, type Language } from '../i18n';
+import { createTouchHint, type TouchHint, type TouchHintType } from './touch-hint';
 
 export type TapToStartMode = 'dismiss-only' | 'pass-first-input';
 export type LocalizedText = string | Partial<Record<Language, string>>;
@@ -49,6 +49,11 @@ export function createTapToStartOverlay(options: TapToStartOptions): TapToStartO
   }
 
   function handlePointerDown(event: PointerEvent) {
+    if (mode === 'dismiss-only') {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
     hide();
     options.onStart(event);
   }

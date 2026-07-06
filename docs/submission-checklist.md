@@ -1,5 +1,7 @@
 # Submission Checklist
 
+If you are converting an existing game, start with [Partner Game Porting Template](partner-game-porting-template.md), then use this checklist before delivery.
+
 Before sending a bundle or opening a source PR, check:
 
 Flow:

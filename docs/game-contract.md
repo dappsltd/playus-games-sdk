@@ -103,7 +103,7 @@ Decisions to make per game:
 
 Every game produces one numeric score. You only send the numeric value; Playus assigns the score type and display rules in game metadata.
 
-Supported score types: seconds, points, errors, percent, levels.
+Supported score types: seconds, points, errors, percent, level.
 
 Rules:
 
@@ -223,8 +223,10 @@ Conventions:
 | --- | --- |
 | Correct input / scoring | `positive-input`, `pop-happy`, `pop-sharp`, `pop-bubble` |
 | Level or round complete | `level-complete`, `level-up` |
-| Wrong input / failure | `negative-input`, `game-warning` |
+| Wrong input / failure | `negative-input`, `game-warning`, `pop-multi-down` |
 | Collision / impact | `wall-hit`, `wall-hit-2`, `hit-analog` |
+
+When working from a clone of this repository, you can audition the shared sounds in `dev-assets/sounds/games/`. Those previews are not published in the npm package.
 
 Custom sounds: bundle your own files with the game and play them through the same manager — host mute applies automatically:
 

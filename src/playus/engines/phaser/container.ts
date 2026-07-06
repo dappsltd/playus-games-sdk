@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
-import { applyMobileSurfaceStyle } from '../mobile-interaction';
-import { isDebugMode } from '../overlay/debug';
-import { type BackgroundConfig, isTransparent, getBackgroundColor } from '../types/background';
+import { type BackgroundConfig, isTransparent, getBackgroundColor } from '../../background';
+import { isDebugMode } from '../../overlay/debug';
+import { applyMobileSurfaceStyle } from '../../webview/mobile-interaction';
 
 export const BASE_VIEWPORT_WIDTH = 1200;
 export const BASE_VIEWPORT_HEIGHT = 1920;

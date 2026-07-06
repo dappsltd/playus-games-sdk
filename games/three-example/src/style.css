@@ -1,0 +1,27 @@
+#game-viewport .score {
+  position: absolute;
+  z-index: 2;
+  top: 7vh;
+  left: 0;
+  right: 0;
+  color: #ffffff;
+  text-align: center;
+  font-family: "Unbounded", system-ui, sans-serif;
+  font-size: min(12vh, 21vw);
+  font-weight: 900;
+  pointer-events: none;
+}
+
+#game-viewport .status {
+  position: absolute;
+  z-index: 2;
+  bottom: 12vh;
+  left: 0;
+  right: 0;
+  color: #8ea0ad;
+  text-align: center;
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-size: min(4vh, 6vw);
+  font-weight: 600;
+  pointer-events: none;
+}

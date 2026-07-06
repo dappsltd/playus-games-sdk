@@ -12,9 +12,10 @@ If you cannot share source (copyright or other reasons), a built bundle is fine 
 
 1. Build your game in your own repository.
 2. Install and use `@playus.club/games-sdk`.
-3. Build a static production bundle with relative asset paths (Vite: `base: './'`).
-4. Test the built bundle in the local Playus host simulator (copy it into `public/<game-id>/`, see the README).
-5. Send Playus the bundle (or your source) plus the required game metadata from the submission checklist.
+3. If you are porting an existing game, use `docs/partner-game-porting-template.md` to remove app-shell behavior and document Playus-specific decisions.
+4. Build a static production bundle with relative asset paths (Vite: `base: './'`).
+5. Test the built bundle in the local Playus host simulator (copy it into `public/<game-id>/`, see the README).
+6. Send Playus the bundle (or your source) plus the required game metadata from the submission checklist.
 
 ## What Happens After Acceptance
 

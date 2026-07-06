@@ -17,6 +17,10 @@
     "baseUrl": ".",
     "paths": {
       "@playus.club/games-sdk": ["src/playus/index.ts"],
+      "@playus.club/games-sdk/phaser": ["src/playus/engines/phaser/index.ts"],
+      "@playus.club/games-sdk/babylon": ["src/playus/engines/babylon/index.ts"],
+      "@playus.club/games-sdk/three": ["src/playus/engines/three/index.ts"],
+      "@playus.club/games-sdk/overlay": ["src/playus/overlay/index.ts"],
       "@playus.club/games-sdk/*": ["src/playus/*"]
     }
   },

@@ -1,5 +1,5 @@
-import { applyMobileSurfaceStyle, installTouchDefaultGuard } from '../mobile-interaction';
-import { type BackgroundConfig, getBackgroundColor, isTransparent } from '../types/background';
+import { type BackgroundConfig, getBackgroundColor, isTransparent } from '../../background';
+import { applyMobileSurfaceStyle, installTouchDefaultGuard } from '../../webview/mobile-interaction';
 
 export type ThreeCanvasOptions = {
   aspectRatio?: number;

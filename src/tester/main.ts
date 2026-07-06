@@ -10,6 +10,7 @@ const examples: Example[] = [
   { label: 'Starter game', url: '/games/starter-game/' },
   { label: 'Phaser example', url: '/games/phaser-example/' },
   { label: 'Babylon example', url: '/games/babylon-example/' },
+  { label: 'Three example', url: '/games/three-example/' },
 ];
 
 const app = document.querySelector<HTMLDivElement>('#app');

@@ -1,5 +1,5 @@
-import { sound } from './sound';
-import { installMobileSelectionPolicy } from './mobile-interaction';
+import { sound } from '../sound';
+import { installMobileSelectionPolicy } from '../webview/mobile-interaction';
 
 const NATIVE_HANDLER_NAME = 'gameEvent';
 const BRIDGE_VERSION = 3;
