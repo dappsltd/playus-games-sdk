@@ -217,6 +217,12 @@ await sound.preload(['positive-input', 'level-complete']);
 sound.play('positive-input', { volume: 0.8 });
 ```
 
+Both `play` and `playUrl` accept an optional pitch shift in semitones — useful for playing melodies or adding variation from a single sample. It works via playback rate, so pitched-up notes also play faster and shorter; stay within roughly ±12 semitones:
+
+```ts
+sound.play('piano1', { volume: 0.85, semitones: 7 }); // a fifth up
+```
+
 Conventions:
 
 | Moment | Sounds |

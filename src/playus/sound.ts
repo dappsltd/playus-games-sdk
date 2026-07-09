@@ -25,6 +25,13 @@ export type SoundId =
 
 export type SoundPlayOptions = {
   volume?: number;
+  /**
+   * Pitch shift in semitones (e.g. `7` = a fifth up, `-12` = an octave down).
+   * Implemented via playback rate, so pitched-up sounds also play faster and
+   * pitched-down sounds slower — natural for short one-shot samples, roughly
+   * ±12 semitones before it sounds artificial.
+   */
+  semitones?: number;
 };
 
 const CDN_BASE = 'https://pub-f2838cca4376431f9c696446d4a3e503.r2.dev';
@@ -116,6 +123,10 @@ class SoundManager {
       try {
         const source = this.audioContext.createBufferSource();
         source.buffer = buffer;
+
+        if (options.semitones) {
+          source.playbackRate.value = 2 ** (options.semitones / 12);
+        }
 
         if (options.volume !== undefined && options.volume !== 1) {
           const gainNode = this.audioContext.createGain();

@@ -202,7 +202,11 @@ Difficulty should keep sharpening for score-attack and survival games. Prefer un
 
 Generated content must remain theoretically solvable. A perfect zero-reaction player or solver should always have at least one valid path through deterministic random content such as lanes, walls, spikes, platforms, target fields, or obstacle rows. Later content may be practically impossible for humans, but should not contain fully blocked walls, unreachable landing gaps, unavoidable lane patterns, or other no-win states.
 
-Check responsive bounds as part of the port. The game should fill the actual WebView bounds unless it is intentionally fixed-format, and viewport size changes must not change difficulty. Keep gameplay dimensions in stable world units or a stable virtual coordinate system; adapt camera/framing/UI to the viewport instead of making obstacles, lanes, hit areas, or scoring easier on wider or taller bounds.
+Check responsive bounds as part of the port. Games should be responsive by default because the host game area may change over time. Optimize the gameplay presentation for portrait screens around a `1.6` height/width ratio, but do not hard-limit the game to that exact ratio unless Playus explicitly approved a fixed-format port.
+
+Viewport size, CSS pixel size, physical pixel size, and device pixel ratio must not change difficulty. Keep gameplay dimensions in stable world units, a stable virtual coordinate system, or one uniform gameplay scale. Adapt camera, framing, background, and UI to the viewport instead of making obstacles, lanes, hit areas, safe areas, spawn spacing, movement speeds, timing windows, or scoring easier on wider, taller, denser, or larger bounds. If the game area has more pixels or more visual room, player size, hazard size, path width, and safe gaps should scale together so their proportions and difficulty stay the same.
+
+Fullscreen device edges need care. Many phones and tablets reserve edge areas for system gestures such as back, home, app switching, or native edge swipes. When the port has explicit visible controls, buttons, pads, sliders, or fixed tap targets, avoid placing them directly against the game bounds when a small safe margin is possible. This is only a control-placement guideline: do not add large dead zones, do not block global tap-anywhere or swipe gameplay mechanics, and do not force awkward layouts just to avoid every edge-adjacent interaction.
 
 Balance performance against game experience. Removing large textures, remote models, heavyweight engines, shadows, post-processing, or unbounded particles is often a good trade. Removing a cheap gradient, small instanced props, readable vehicle shapes, or a defining font is usually a bad trade unless profiling or device testing shows it matters.
 
@@ -217,6 +221,7 @@ Review:
 - Does backgrounding or low FPS create an advantage?
 - Are object allocations low in hot update loops?
 - Does startup avoid heavy noncritical work?
+- Are explicit controls padded away from fullscreen device edges when practical, without blocking normal gameplay input?
 
 ### 8. Delivery Follow-Up
 
