@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.5
+
+- Tap-to-start (`dismiss-only`): the starting tap no longer leaks into the game on iOS. WebKit re-dispatches the tap's touch and compatibility mouse events to the exposed canvas after the overlay hides itself, which games counted as a first (wrong) input; the overlay now swallows the rest of the starting gesture.
+- Tap-to-start: `show()` after a dismissal re-arms the pointer listener; previously a re-shown `dismiss-only` overlay could not be dismissed and blocked all input.
+
 ## 0.1.4
 
 - `styles.css` no longer paints the page: removed the `:root` background, `color-scheme: dark` (both made WKWebView opaque and blocked the native Playus background), and the `.playus-game-root` background. Games are transparent by default again; opt into a solid background per game via `BackgroundConfig`.

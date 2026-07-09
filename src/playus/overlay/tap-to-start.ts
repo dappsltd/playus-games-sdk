@@ -52,15 +52,27 @@ export function createTapToStartOverlay(options: TapToStartOptions): TapToStartO
     if (mode === 'dismiss-only') {
       event.preventDefault();
       event.stopPropagation();
+      swallowGestureTail();
     }
 
     hide();
     options.onStart(event);
   }
 
+  // idempotent: re-adding the same listener is a no-op, so show() after
+  // hide() re-arms dismissal instead of leaving an undismissable overlay
+  function attach() {
+    if (mode === 'dismiss-only') {
+      root.addEventListener('pointerdown', handlePointerDown);
+    } else {
+      parent.addEventListener('pointerdown', handlePointerDown, true);
+    }
+  }
+
   function show() {
     root.hidden = false;
     touchHint?.show();
+    attach();
   }
 
   function hide() {
@@ -75,13 +87,38 @@ export function createTapToStartOverlay(options: TapToStartOptions): TapToStartO
     root.remove();
   }
 
-  if (mode === 'dismiss-only') {
-    root.addEventListener('pointerdown', handlePointerDown);
-  } else {
-    parent.addEventListener('pointerdown', handlePointerDown, true);
-  }
+  attach();
 
   return { show, hide, destroy };
+}
+
+// iOS Safari re-dispatches the starting tap to whatever is under the finger
+// once the overlay is hidden: the touch events and (after touchend) the
+// compatibility mouse events hit-test the exposed game canvas and arrive
+// there as a fresh tap. preventDefault on pointerdown does not reliably
+// suppress them in WebKit, so swallow the rest of the gesture at window
+// capture level until the pointer is released.
+function swallowGestureTail() {
+  const types = ['touchstart', 'touchmove', 'touchend', 'mousedown', 'mouseup', 'click'];
+  const swallow = (event: Event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+  const endGesture = () => {
+    // one tick late so the trailing touchend/compat mouse events of the
+    // same tap are still swallowed
+    window.setTimeout(() => {
+      for (const type of types) window.removeEventListener(type, swallow, true);
+      window.removeEventListener('pointerup', endGesture, true);
+      window.removeEventListener('pointercancel', endGesture, true);
+    }, 0);
+  };
+
+  for (const type of types) {
+    window.addEventListener(type, swallow, { capture: true, passive: false });
+  }
+  window.addEventListener('pointerup', endGesture, true);
+  window.addEventListener('pointercancel', endGesture, true);
 }
 
 function localizedText(text: LocalizedText): string {
