@@ -3,9 +3,10 @@ import { getUrlParam } from './url-params';
 /**
  * Supported languages - single source of truth
  */
-export const SUPPORTED_LANGUAGES = ['en', 'de', 'fr', 'es', 'it'] as const;
+export const SUPPORTED_LANGUAGES = ['en', 'de', 'es', 'fr', 'it', 'tr', 'ar'] as const;
 export type Language = typeof SUPPORTED_LANGUAGES[number];
 export const DEFAULT_LANGUAGE: Language = 'en';
+export type TextDirection = 'ltr' | 'rtl';
 
 /**
  * Translation dictionary type - key-first structure
@@ -31,11 +32,18 @@ export type TranslationDict<Keys extends string> = {
  * getCurrentLanguage(); // Returns 'en'
  */
 export function getCurrentLanguage(): Language {
-  const lang = getUrlParam('lang');
-  if (lang && SUPPORTED_LANGUAGES.includes(lang as Language)) {
-    return lang as Language;
-  }
+  const lang = getUrlParam('lang')
+    ?.trim()
+    .toLowerCase()
+    .replace('_', '-')
+    .split('-')[0];
+
+  if (lang && isSupportedLanguage(lang)) return lang;
   return DEFAULT_LANGUAGE;
+}
+
+export function getLanguageDirection(language: Language = getCurrentLanguage()): TextDirection {
+  return language === 'ar' ? 'rtl' : 'ltr';
 }
 
 /**
@@ -84,4 +92,8 @@ export function createTranslator<Keys extends string>(
 
     return text;
   }) as any;
+}
+
+function isSupportedLanguage(value: string): value is Language {
+  return (SUPPORTED_LANGUAGES as readonly string[]).includes(value);
 }

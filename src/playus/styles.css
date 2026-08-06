@@ -7,7 +7,7 @@
    dark canvas — breaks that. Solid backgrounds are opt-in per game via
    BackgroundConfig. */
 :root {
-  font-family: "Space Grotesk", "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "Space Grotesk", "Rebounded", "Unbounded", "ReboundedRemote", "UnboundedRemote", "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #ffffff;
 }
 
@@ -56,7 +56,7 @@ select {
   max-width: 80%;
   text-align: center;
   color: #ffffff;
-  font-family: "Unbounded", "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "Rebounded", "Unbounded", "ReboundedRemote", "UnboundedRemote", "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: min(5vh, 6vw);
   font-weight: 700;
   line-height: 1.12;

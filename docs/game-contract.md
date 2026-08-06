@@ -85,6 +85,8 @@ createTapToStartOverlay({
     fr: 'Touchez pour commencer',
     es: 'Toca para empezar',
     it: 'Tocca per iniziare',
+    tr: 'Başlamak için dokun',
+    ar: 'المس للبدء',
   },
   mode: 'dismiss-only',
   touchHint: 'tap',
@@ -152,6 +154,8 @@ const translations = {
     fr: 'Touchez la cible',
     es: 'Toca el objetivo',
     it: 'Tocca il bersaglio',
+    tr: 'Hedefe dokun',
+    ar: 'المس الهدف',
   },
 } satisfies TranslationDict<'hint'>;
 
@@ -159,7 +163,7 @@ const t = createTranslator(translations);
 t('hint');
 ```
 
-Required languages: `en`, `de`, `fr`, `es`, `it`. Unknown or missing languages fall back to English. Keep text short enough to fit German and French.
+Required languages: `en`, `de`, `es`, `fr`, `it`, `tr`, `ar`. Regional values such as `tr-TR` and `ar-SA` are normalized to their supported base language. Unknown or missing languages fall back to English. Keep text short enough to fit every supported language.
 
 ## Seeded Random
 
@@ -320,7 +324,7 @@ const background = { transparent: false, color: '#1a1b2e' } as const;
 
 Transparent backgrounds let the native app background show through; a solid color is cheaper to render. Prefer solid when the game visually owns the whole screen.
 
-Fonts: `styles.css` provides `Unbounded` (big scores, hints, titles), `Space Grotesk` and `Quicksand` (secondary text). They load from the native app, with a CDN fallback in the browser. Custom fonts are fine too — bundle them with your game (woff2, keep them small) and load them with your own `@font-face`.
+Fonts: `styles.css` provides `Rebounded` (the primary display font with Latin, Cyrillic, Greek and Arabic coverage), `Unbounded` as a compatibility fallback, plus `Space Grotesk` and `Quicksand` for secondary text. Native and remote faces are kept separate so the fallback order is native Rebounded, native Unbounded, remote Rebounded, then remote Unbounded. Use `Rebounded, Unbounded, ReboundedRemote, UnboundedRemote, system-ui, sans-serif` for canvas-rendered display text. Use `Space Grotesk, Rebounded, Unbounded, ReboundedRemote, UnboundedRemote, system-ui, sans-serif` or the equivalent Quicksand stack for secondary localized text. Custom fonts are fine too — bundle them with your game (woff2, keep them small) and load them with your own `@font-face`.
 
 ## Debug Mode
 

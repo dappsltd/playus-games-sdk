@@ -1,4 +1,4 @@
-import { getCurrentLanguage, type Language } from '../i18n';
+import { getCurrentLanguage, getLanguageDirection, type Language } from '../i18n';
 import { createTouchHint, type TouchHint, type TouchHintType } from './touch-hint';
 
 export type TapToStartMode = 'dismiss-only' | 'pass-first-input';
@@ -23,6 +23,7 @@ export function createTapToStartOverlay(options: TapToStartOptions): TapToStartO
   const mode = options.mode ?? 'dismiss-only';
   const root = document.createElement('div');
   const label = document.createElement('div');
+  const language = getCurrentLanguage();
   let touchHint: TouchHint | null = null;
 
   root.className = 'playus-tap-start';
@@ -35,7 +36,11 @@ export function createTapToStartOverlay(options: TapToStartOptions): TapToStartO
     fr: 'Touchez pour commencer',
     es: 'Toca para empezar',
     it: 'Tocca per iniziare',
-  });
+    tr: 'Başlamak için dokun',
+    ar: 'المس للبدء',
+  }, language);
+  label.lang = language;
+  label.dir = getLanguageDirection(language);
   label.style.pointerEvents = mode === 'dismiss-only' ? 'auto' : 'none';
 
   root.appendChild(label);
@@ -121,9 +126,8 @@ function swallowGestureTail() {
   window.addEventListener('pointercancel', endGesture, true);
 }
 
-function localizedText(text: LocalizedText): string {
+function localizedText(text: LocalizedText, language: Language): string {
   if (typeof text === 'string') return text;
 
-  const language = getCurrentLanguage();
   return text[language] ?? text.en ?? Object.values(text)[0] ?? '';
 }

@@ -36,9 +36,27 @@ const t = createTranslator({
     fr: 'Touchez le cube quand il devient vert',
     es: 'Toca el cubo cuando se ponga verde',
     it: 'Tocca il cubo quando diventa verde',
+    tr: 'Küp yeşile döndüğünde dokun',
+    ar: 'المس المكعب عندما يتحول إلى اللون الأخضر',
   },
-  wait: { en: 'Wait…', de: 'Warte…', fr: 'Attendez…', es: 'Espera…', it: 'Aspetta…' },
-  go: { en: 'Now!', de: 'Jetzt!', fr: 'Maintenant !', es: '¡Ahora!', it: 'Ora!' },
+  wait: {
+    en: 'Wait…',
+    de: 'Warte…',
+    fr: 'Attendez…',
+    es: 'Espera…',
+    it: 'Aspetta…',
+    tr: 'Bekle…',
+    ar: 'انتظر…',
+  },
+  go: {
+    en: 'Now!',
+    de: 'Jetzt!',
+    fr: 'Maintenant !',
+    es: '¡Ahora!',
+    it: 'Ora!',
+    tr: 'Şimdi!',
+    ar: 'الآن!',
+  },
 });
 
 // Solid background: the DOM viewport gets this color, and we must also hand it to

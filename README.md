@@ -56,6 +56,8 @@ createTapToStartOverlay({
     fr: 'Touchez pour commencer',
     es: 'Toca para empezar',
     it: 'Tocca per iniziare',
+    tr: 'Başlamak için dokun',
+    ar: 'المس للبدء',
   },
   mode: 'dismiss-only',
   onStart: () => {

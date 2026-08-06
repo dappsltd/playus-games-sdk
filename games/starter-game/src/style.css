@@ -8,7 +8,7 @@
   left: 0;
   right: 0;
   text-align: center;
-  font-family: "Unbounded", system-ui, sans-serif;
+  font-family: "Rebounded", "Unbounded", "ReboundedRemote", "UnboundedRemote", system-ui, sans-serif;
   font-size: min(14vh, 24vw);
   font-weight: 900;
 }

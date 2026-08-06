@@ -6,7 +6,7 @@
   right: 0;
   color: #ffffff;
   text-align: center;
-  font-family: "Unbounded", system-ui, sans-serif;
+  font-family: "Rebounded", "Unbounded", "ReboundedRemote", "UnboundedRemote", system-ui, sans-serif;
   font-size: min(12vh, 21vw);
   font-weight: 900;
   pointer-events: none;

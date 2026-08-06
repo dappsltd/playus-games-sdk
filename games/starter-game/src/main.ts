@@ -48,6 +48,8 @@ createTapToStartOverlay({
     fr: 'Touchez 5 cibles le plus vite possible',
     es: 'Acierta 5 objetivos lo más rápido posible',
     it: 'Colpisci 5 bersagli il più velocemente possibile',
+    tr: '5 hedefi olabildiğince hızlı vur',
+    ar: 'اضرب 5 أهداف بأسرع ما يمكنك',
   },
   mode: 'dismiss-only',
   touchHint: 'tap-sides',

@@ -44,6 +44,8 @@ const t = createTranslator({
     fr: 'Éclatez un maximum de bulles',
     es: 'Explota tantas burbujas como puedas',
     it: 'Scoppia più bolle che puoi',
+    tr: 'Patlatabildiğin kadar balon patlat',
+    ar: 'فرقع أكبر عدد ممكن من الفقاعات',
   },
 });
 
@@ -65,14 +67,14 @@ class MainScene extends Phaser.Scene {
     const { width } = this.scale;
 
     this.scoreText = this.add.text(width / 2, 250, '0', {
-      fontFamily: 'Unbounded, system-ui, sans-serif',
+      fontFamily: 'Rebounded, Unbounded, ReboundedRemote, UnboundedRemote, system-ui, sans-serif',
       fontSize: '150px',
       fontStyle: '900',
       color: '#ffffff',
     }).setOrigin(0.5);
 
     this.timeText = this.add.text(width / 2, 110, formatSecondsAsClock(ROUND_SECONDS), {
-      fontFamily: 'Unbounded, system-ui, sans-serif',
+      fontFamily: 'Rebounded, Unbounded, ReboundedRemote, UnboundedRemote, system-ui, sans-serif',
       fontSize: '60px',
       fontStyle: '700',
       color: '#8ea0ad',

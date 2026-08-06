@@ -11,8 +11,14 @@ export { refreshOnFontsLoaded } from './fonts';
 export type { RefreshOnFontsLoadedOptions } from './fonts';
 export { observeCanvasSize } from './canvas';
 export type { CanvasSize, ObserveCanvasSizeOptions } from './canvas';
-export { createTranslator, getCurrentLanguage } from './i18n';
-export type { Language, TranslationDict } from './i18n';
+export {
+  createTranslator,
+  DEFAULT_LANGUAGE,
+  getCurrentLanguage,
+  getLanguageDirection,
+  SUPPORTED_LANGUAGES,
+} from './i18n';
+export type { Language, TextDirection, TranslationDict } from './i18n';
 export { createTapToStartOverlay } from './overlay/tap-to-start';
 export type { LocalizedText, TapToStartMode, TapToStartOverlay } from './overlay/tap-to-start';
 export { sound } from './sound';

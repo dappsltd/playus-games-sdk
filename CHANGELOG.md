@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.11
+
+- Added Rebounded as the primary Playus display font, with Unbounded retained as a compatibility fallback.
+- Rebounded now provides Arabic fallback coverage for Space Grotesk and Quicksand; the separate Lalezar font was removed.
+- Native and remote font faces are separated so older clients prefer bundled Unbounded before downloading Rebounded.
+
+## 0.1.10
+
+- Added Turkish (`tr`) and Arabic (`ar`) to the shared language model, including regional language-code normalization, text-direction metadata, and localized tap-to-start defaults.
+- Added Lalezar as the Arabic fallback for shared Playus font stacks and canvas font refreshes.
+
 ## 0.1.8
 
 - Added `refreshOnFontsLoaded()`: loads the shared web fonts explicitly via `document.fonts.load()` and re-invokes a redraw callback once they are usable, so canvas text (Phaser/Babylon/Three) picks up the real font instead of staying on the fallback. Replaces the per-game `document.fonts.ready`/`loadingdone` pattern, which never triggers the download itself and can fire before the font was even requested.

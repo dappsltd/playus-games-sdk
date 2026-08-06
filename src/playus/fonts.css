@@ -1,10 +1,34 @@
 @font-face {
+  font-family: "Rebounded";
+  src: url("native://fonts/Rebounded.woff2") format("woff2"),
+       url("native://fonts/Rebounded.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "Unbounded";
   src: url("native://fonts/Unbounded.woff2") format("woff2"),
-       url("native://fonts/Unbounded.ttf") format("truetype"),
-       url("https://pub-f2838cca4376431f9c696446d4a3e503.r2.dev/fonts/Unbounded.woff2") format("woff2");
+       url("native://fonts/Unbounded.ttf") format("truetype");
   font-style: normal;
-  font-weight: 400 900;
+  font-weight: 300 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ReboundedRemote";
+  src: url("https://assets.playus.club/fonts/Rebounded.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "UnboundedRemote";
+  src: url("https://assets.playus.club/fonts/Unbounded.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 300 900;
   font-display: swap;
 }
 
@@ -12,7 +36,7 @@
   font-family: "Space Grotesk";
   src: url("native://fonts/SpaceGrotesk.woff2") format("woff2"),
        url("native://fonts/SpaceGrotesk.ttf") format("truetype"),
-       url("https://pub-f2838cca4376431f9c696446d4a3e503.r2.dev/fonts/SpaceGrotesk.woff2") format("woff2");
+       url("https://assets.playus.club/fonts/SpaceGrotesk.woff2") format("woff2");
   font-style: normal;
   font-weight: 300 800;
   font-display: block;
@@ -22,7 +46,7 @@
   font-family: "Quicksand";
   src: url("native://fonts/Quicksand.woff2") format("woff2"),
        url("native://fonts/Quicksand.ttf") format("truetype"),
-       url("https://pub-f2838cca4376431f9c696446d4a3e503.r2.dev/fonts/Quicksand.woff2") format("woff2");
+       url("https://assets.playus.club/fonts/Quicksand.woff2") format("woff2");
   font-style: normal;
   font-weight: 300 700;
   font-display: swap;
