@@ -132,6 +132,15 @@ Call `finished(finalScore)` once when the run is over.
 - Guard against duplicate finishes (the host ignores duplicates, but the game should not do extra work).
 - Playus shows the final result UI — do not build your own.
 
+`finished()` is a one-way notification to the native host. It does not stop JavaScript, pause an engine, or unload the WebView. The host may keep the game mounted and visible behind its blurred result/upload UI until the player closes that view.
+
+Choose and document one post-finish rendering mode:
+
+- **Static:** after any brief final feedback, stop or pause the engine/requestAnimationFrame render loop before calling `finished()`. The last rendered frame can remain visible behind the native result UI without consuming frame time.
+- **Ambient:** continued rendering is allowed when a small result-state animation materially improves the presentation. Keep only that intentional, cheap, bounded cosmetic motion. Stop gameplay input and simulation, physics, spawns, scoring and score bridge updates, unrelated timers/tweens, looping audio/haptics, and any allocation or collection growth. Do not keep the full live game simulation running as ambience.
+
+In both modes, no gameplay or score state may change after the outcome is fixed. Browser lifecycle handling such as `visibilitychange` should also suspend rendering and nonessential work while the document is hidden.
+
 ## Localization
 
 Game bundles must localize all in-game text, because Playus hosts the bundle as delivered.

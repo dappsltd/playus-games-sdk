@@ -143,7 +143,10 @@ Keep the first playable frame fast:
 - avoid remote runtime dependencies
 - avoid WebGPU-only rendering paths; older WebViews may only be reliable with WebGL or Canvas
 - keep texture sizes, model complexity, particles, shadows, and post-processing modest
-- stop work when the game is finished or not visible
+- remember that `finished()` does not stop JavaScript or unload the WebView
+- for a static result backdrop, stop or pause the render loop after final feedback
+- for an intentional ambient result backdrop, keep only cheap, bounded cosmetic motion and stop gameplay, physics, spawns, scoring/bridge traffic, input, looping audio, and unrelated timers/tweens
+- suspend rendering and nonessential work when the document is not visible
 - test on a real mobile device when possible, especially Android
 - test the production build in the Playus host simulator, not only your framework dev server
 

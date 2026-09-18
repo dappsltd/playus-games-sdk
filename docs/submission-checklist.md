@@ -14,6 +14,7 @@ Flow:
 - `score()` is sent only on meaningful live leaderboard changes in whole units, not every frame.
 - Time-based games send `score(0)` right after `started()`.
 - `finished(finalScore)` fires exactly once with the exact final value.
+- The post-finish rendering mode is documented: a static result stops/pauses the render loop, while an intentional ambient result keeps only cheap, bounded cosmetic motion and no gameplay, physics, spawning, scoring/bridge updates, input, looping audio, or unrelated timers.
 - The game has a clear end and no custom start, game-over, result, pause, or settings screens.
 
 Scoring:
