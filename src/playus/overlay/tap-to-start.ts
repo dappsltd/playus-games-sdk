@@ -30,6 +30,7 @@ export function createTapToStartOverlay(options: TapToStartOptions): TapToStartO
   root.style.pointerEvents = mode === 'dismiss-only' ? 'auto' : 'none';
 
   label.className = 'playus-tap-start__label';
+  label.style.background = 'transparent';
   label.textContent = localizedText(options.text ?? {
     en: 'Tap to start',
     de: 'Tippen zum Starten',

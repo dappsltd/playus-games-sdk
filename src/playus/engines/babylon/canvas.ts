@@ -10,7 +10,7 @@ export type CanvasOptions = {
 export function createCanvas(options?: CanvasOptions): HTMLCanvasElement {
   const bgColor = getBackgroundColor(options?.background);
 
-  // Root fills the screen and centers the game viewport
+  // The root owns the HTML background; the viewport and overlays stay transparent.
   const root = document.createElement("div");
   root.id = "game-root";
   Object.assign(root.style, {
@@ -30,7 +30,7 @@ export function createCanvas(options?: CanvasOptions): HTMLCanvasElement {
     width: "min(100vw, calc(100vh * 0.625))",
     aspectRatio: "0.625",
     position: "relative",
-    ...(bgColor && { background: bgColor }),
+    background: "transparent",
   } as CSSStyleDeclaration);
   applyMobileSurfaceStyle(viewport);
   root.appendChild(viewport);
@@ -55,7 +55,8 @@ export function createCanvas(options?: CanvasOptions): HTMLCanvasElement {
   Object.assign(canvas.style, {
     width: "100%",
     height: "100%",
-    display: "block"
+    display: "block",
+    background: "transparent",
   } as CSSStyleDeclaration);
   applyMobileSurfaceStyle(canvas);
   installTouchDefaultGuard(canvas);

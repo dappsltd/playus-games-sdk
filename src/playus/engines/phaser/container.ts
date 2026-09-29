@@ -63,7 +63,7 @@ export function createPhaserParent(options?: PhaserParentOptions): HTMLElement {
   const aspectRatio = options?.aspectRatio ?? 1.6;
   const bgColor = getBackgroundColor(options?.background);
 
-  // Root fills the screen and centers the game viewport
+  // The root owns the HTML background; the viewport and overlays stay transparent.
   const root = document.createElement('div');
   root.id = 'game-root';
   Object.assign(root.style, {
@@ -83,7 +83,7 @@ export function createPhaserParent(options?: PhaserParentOptions): HTMLElement {
   Object.assign(viewport.style, {
     width: `min(100vw, calc(100vh / ${aspectRatio}))`,
     aspectRatio: `${1 / aspectRatio}`,
-    background: bgColor ?? 'transparent',
+    background: 'transparent',
     position: 'relative',
     overflow: 'hidden',
   } as CSSStyleDeclaration);

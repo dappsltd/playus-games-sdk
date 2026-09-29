@@ -117,6 +117,7 @@ const CIRCLE_BASE: Partial<CSSStyleDeclaration> = {
 
 function createCircle(size: string, color: string): HTMLDivElement {
   const el = document.createElement('div');
+  el.className = 'playus-touch-hint__circle';
   Object.assign(el.style, {
     ...CIRCLE_BASE,
     background: color,
@@ -253,7 +254,9 @@ export function createTouchHint(type: TouchHintType, parent: HTMLElement, color 
   injectKeyframes();
 
   const container = document.createElement('div');
+  container.className = 'playus-touch-hint';
   Object.assign(container.style, {
+    background: 'transparent',
     position: 'absolute',
     top: options?.top ?? '62%',
     left: '50%',

@@ -10,6 +10,7 @@ export function createThreeCanvas(options: ThreeCanvasOptions = {}): HTMLCanvasE
   const aspectRatio = options.aspectRatio ?? 1.6;
   const background = getBackgroundColor(options.background);
 
+  // The root owns the HTML background; the viewport and overlays stay transparent.
   const root = document.createElement('div');
   root.id = 'game-root';
   Object.assign(root.style, {
@@ -29,7 +30,7 @@ export function createThreeCanvas(options: ThreeCanvasOptions = {}): HTMLCanvasE
     aspectRatio: `${1 / aspectRatio}`,
     position: 'relative',
     overflow: 'hidden',
-    background: background ?? 'transparent',
+    background: 'transparent',
   } as CSSStyleDeclaration);
   applyMobileSurfaceStyle(viewport);
   root.appendChild(viewport);
@@ -40,6 +41,7 @@ export function createThreeCanvas(options: ThreeCanvasOptions = {}): HTMLCanvasE
     width: '100%',
     height: '100%',
     display: 'block',
+    background: 'transparent',
   } as CSSStyleDeclaration);
   applyMobileSurfaceStyle(canvas);
   installTouchDefaultGuard(canvas);

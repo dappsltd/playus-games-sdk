@@ -1,6 +1,6 @@
 {
   "name": "@playus.club/games-sdk",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "type": "module",
   "publishConfig": {
     "access": "public"

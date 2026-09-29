@@ -10,6 +10,7 @@ export { clampGameplayDeltaMs, clampGameplayDeltaSeconds } from './timing';
 export { refreshOnFontsLoaded } from './fonts';
 export type { RefreshOnFontsLoadedOptions } from './fonts';
 export { observeCanvasSize } from './canvas';
+export { observeLayoutSize } from './layout';
 export type { CanvasSize, ObserveCanvasSizeOptions } from './canvas';
 export {
   createTranslator,

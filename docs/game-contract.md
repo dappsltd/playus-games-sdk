@@ -333,6 +333,12 @@ const background = { transparent: false, color: '#1a1b2e' } as const;
 
 Transparent backgrounds let the native app background show through; a solid color is cheaper to render. Prefer solid when the game visually owns the whole screen.
 
+An opaque renderer covering the full viewport needs no HTML background: omit the background option from the container helper while retaining the renderer's own clear color/alpha configuration. When a background is visible through a transparent scene or around a fitted canvas, the outer game root owns it. Engine helpers apply that configured color only to `#game-root`; inner viewports and canvas elements stay transparent in CSS. Custom gradients or images also belong on that outer root, not on `html`, `body`, or a selector shared with its descendants. Keep unfilled HUD and hint wrappers transparent. Intentional button/card fills and hint dimming remain local to those elements.
+
+Preserve the intended HUD anchor: screen-edge scores belong on the outer game root, while board-relative controls belong in the canvas viewport. `observeLayoutSize(anchor)` supplies `--game-width-unit` and `--game-height-unit` (one percent of the measured content width/height) without CSS size containment. For example, `font-size: min(calc(13 * var(--game-width-unit)), calc(12 * var(--game-height-unit)))`. Call the returned function when disposing the HUD; observation also stops on non-persisted page unload. Pure groups of positioned HUD children can use `display: contents` to avoid an unnecessary full-viewport paint box.
+
+SDK touch hints expose `.playus-touch-hint` for the transparent wrapper and `.playus-touch-hint__circle` for the explicitly colored circles. Target these classes instead of relying on unnamed nested `div` elements.
+
 Fonts: `styles.css` provides `Rebounded` (the primary display font with Latin, Cyrillic, Greek and Arabic coverage), `Unbounded` as a compatibility fallback, plus `Space Grotesk` and `Quicksand` for secondary text. Native and remote faces are kept separate so the fallback order is native Rebounded, native Unbounded, remote Rebounded, then remote Unbounded. Use `Rebounded, Unbounded, ReboundedRemote, UnboundedRemote, system-ui, sans-serif` for canvas-rendered display text. Use `Space Grotesk, Rebounded, Unbounded, ReboundedRemote, UnboundedRemote, system-ui, sans-serif` or the equivalent Quicksand stack for secondary localized text. Custom fonts are fine too — bundle them with your game (woff2, keep them small) and load them with your own `@font-face`.
 
 ## Debug Mode
