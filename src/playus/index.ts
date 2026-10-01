@@ -22,8 +22,8 @@ export {
 export type { Language, TextDirection, TranslationDict } from './i18n';
 export { createTapToStartOverlay } from './overlay/tap-to-start';
 export type { LocalizedText, TapToStartMode, TapToStartOverlay } from './overlay/tap-to-start';
-export { sound } from './sound';
-export type { SoundId, SoundPlayOptions } from './sound';
+export { sound, soundThemes, synthSoundIds } from './sound';
+export type { SampleSoundId, SoundId, SoundPlayOptions, SoundEmphasis, SoundTheme, SynthSoundId } from './sound';
 export {
   applyMobileSurfaceStyle,
   installMobileSelectionPolicy,

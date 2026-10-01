@@ -233,11 +233,65 @@ await sound.preload(['positive-input', 'level-complete']);
 sound.play('positive-input', { volume: 0.8 });
 ```
 
-Both `play` and `playUrl` accept an optional pitch shift in semitones — useful for playing melodies or adding variation from a single sample. It works via playback rate, so pitched-up notes also play faster and shorter; stay within roughly ±12 semitones:
+Both `play` and `playUrl` accept an optional pitch shift in semitones — useful for playing melodies or adding variation. Samples use playback rate, so pitched-up notes also play faster and shorter; synthesized cues change frequency without changing duration. Stay within roughly ±12 semitones (synthesized cues clamp shifts to ±48):
 
 ```ts
 sound.play('piano1', { volume: 0.85, semitones: 7 }); // a fifth up
 ```
+
+### Synthesized palette
+
+These cues are bundled sound recipes, synthesized on the same AudioContext as
+the sample sounds. They work offline and follow native mute automatically.
+`preload()` accepts mixed sample and synth IDs, but synth IDs need no preload.
+Play from the first user interaction onward; browser autoplay rules still apply.
+
+```ts
+sound.play('tap');
+sound.play('select', { theme: 'bubble', emphasis: 'subtle', volume: 0.6 });
+sound.play('success', { emphasis: 'strong', semitones: 2 });
+sound.play('count', { duration: 900, direction: 'back' });
+```
+
+| Cue | Suggested game moment |
+| --- | --- |
+| `tap` | Direct tap or button activation |
+| `type` | Text or code entry |
+| `select` | Choose a tile, option, or item |
+| `toggle` | Switch a state |
+| `open`, `close` | Reveal or dismiss a panel |
+| `navigate` | Move between steps |
+| `success` | Correct answer or completed round |
+| `error` | Wrong input or failure |
+| `warning` | A mistake or deadline approaching |
+| `loading`, `ready` | Work starts or a result appears |
+| `attention` | A moment requiring player attention |
+| `count` | One animated score/count transition |
+
+Synth options (sample sounds and `playUrl` ignore these):
+
+- `theme`: `default` (glass, wood, soft mallets), `mech` (mechanical), `bubble`
+  (playful), or `press` (switch clicks and warm notes). Default: `default`.
+- `emphasis`: `subtle`, `normal`, or `strong`. Changes layers and tone; use
+  `volume` separately for loudness. Default: `normal`.
+- `direction`: `forward` or `back`. Changes `select` pitch; reverses sweeps for
+  `navigate`, `toggle`, and `count`.
+- `duration`: `count` animation length in milliseconds, clamped to 300–2000.
+  Default: 800. Other cues ignore it.
+
+`synthSoundIds` and `soundThemes` are exported readonly lists for selection UIs.
+`SoundId` includes both palettes; `SampleSoundId`, `SynthSoundId`, `SoundTheme`,
+and `SoundEmphasis` are available for narrower types. Frequent taps release the
+previous voice of the same cue; different cues can overlap. Sound settings are
+extracted from Cuelume under MIT, with no Cuelume runtime or package dependency.
+The [third-party notice](../THIRD_PARTY_NOTICES.md) is retained in
+`sound.thirdPartyNotices`, so it also survives comment stripping in compiled
+game bundles. Keep that notice when redistributing or adapting the definitions.
+
+Audition the palette using **Synth sound palette** in the local simulator.
+Keep feedback tied to meaningful actions, rather than every frame or score tick.
+
+### Sample and custom sounds
 
 Conventions:
 

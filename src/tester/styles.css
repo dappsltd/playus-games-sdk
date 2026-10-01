@@ -209,6 +209,18 @@ select:focus {
   font-size: 15px;
 }
 
+.sound-preview summary {
+  cursor: pointer;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.sound-preview .icon-button {
+  width: 100%;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
 .contract ol {
   display: grid;
   gap: 8px;

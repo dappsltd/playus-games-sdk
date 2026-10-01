@@ -1,5 +1,6 @@
 import './styles.css';
 import { BridgeEmulator, type HostReadyPayload, type TesterEvent } from './bridge-emulator';
+import { sound, soundThemes, synthSoundIds, type SoundEmphasis, type SoundTheme, type SynthSoundId } from '../playus/sound';
 
 type Example = {
   label: string;
@@ -78,6 +79,30 @@ app.innerHTML = `
         <div class="status-card" id="scoreStatus">score: -</div>
       </div>
 
+      <details class="contract sound-preview">
+        <summary>Synth sound palette</summary>
+        <label class="field">
+          <span>Sound</span>
+          <select id="soundSelect">${synthSoundIds.map((id) => `<option>${id}</option>`).join('')}</select>
+        </label>
+        <label class="field">
+          <span>Theme</span>
+          <select id="soundThemeSelect">${soundThemes.map((theme) => `<option>${theme}</option>`).join('')}</select>
+        </label>
+        <label class="field">
+          <span>Emphasis</span>
+          <select id="soundEmphasisSelect">
+            <option>subtle</option><option selected>normal</option><option>strong</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Volume</span>
+          <input id="soundVolumeInput" type="range" min="0" max="1" step="0.05" value="0.7" />
+        </label>
+        <button id="playSoundButton" class="icon-button" type="button">Play sound</button>
+        <pre id="soundCode"></pre>
+      </details>
+
       <div class="contract">
         <h2>Expected flow</h2>
         <ol>
@@ -125,6 +150,31 @@ const hostReadyStatus = getElement<HTMLDivElement>('hostReadyStatus');
 const startedStatus = getElement<HTMLDivElement>('startedStatus');
 const finishedStatus = getElement<HTMLDivElement>('finishedStatus');
 const scoreStatus = getElement<HTMLDivElement>('scoreStatus');
+const soundSelect = getElement<HTMLSelectElement>('soundSelect');
+const soundThemeSelect = getElement<HTMLSelectElement>('soundThemeSelect');
+const soundEmphasisSelect = getElement<HTMLSelectElement>('soundEmphasisSelect');
+const soundVolumeInput = getElement<HTMLInputElement>('soundVolumeInput');
+const soundCode = getElement<HTMLPreElement>('soundCode');
+
+function selectedSoundOptions() {
+  return {
+    theme: soundThemeSelect.value as SoundTheme,
+    emphasis: soundEmphasisSelect.value as SoundEmphasis,
+    volume: Number(soundVolumeInput.value),
+  };
+}
+
+function updateSoundCode() {
+  soundCode.textContent = `sound.play('${soundSelect.value}', ${JSON.stringify(selectedSoundOptions())});`;
+}
+
+for (const control of [soundSelect, soundThemeSelect, soundEmphasisSelect, soundVolumeInput]) {
+  control.addEventListener('input', updateSoundCode);
+}
+getElement<HTMLButtonElement>('playSoundButton').addEventListener('click', () => {
+  sound.play(soundSelect.value as SynthSoundId, selectedSoundOptions());
+});
+updateSoundCode();
 
 const bridge = new BridgeEmulator({
   sendHostReady,
@@ -240,6 +290,7 @@ function parseHostReadyResult(result: unknown) {
 }
 
 function applyMutedState() {
+  sound.setEnabled(!muteInput.checked);
   try {
     const gameWindow = gameFrame.contentWindow as (Window & {
       gameAPI?: {

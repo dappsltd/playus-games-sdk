@@ -20,7 +20,8 @@
     "dist/sdk",
     "src/playus/*.css",
     "docs",
-    "README.md"
+    "README.md",
+    "THIRD_PARTY_NOTICES.md"
   ],
   "exports": {
     ".": {
@@ -48,6 +49,7 @@
     "./global.css": "./src/playus/global.css"
   },
   "scripts": {
+    "test:sound": "npm run build:sdk && node --test tests/sound.test.mjs",
     "prepublishOnly": "npm run build:sdk",
     "dev": "vite --host --port 8091",
     "dev:starter": "vite games/starter-game --config vite.config.ts --host --port 8090",

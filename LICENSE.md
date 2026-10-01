@@ -2,6 +2,8 @@
 
 Copyright (c) 2026 Dapps Pte Ltd. All rights reserved.
 
+Third-party sound definitions retain their MIT license; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The restrictions below apply to Playus-owned SDK code.
+
 ## Grant
 
 Subject to the terms below, Dapps Pte Ltd grants you a limited, non-exclusive, non-transferable, revocable, royalty-free license to use, reproduce, and modify this SDK solely to develop, test, and build web games intended for review by and distribution within the Playus apps operated by Dapps Pte Ltd ("Playus"), and to distribute the SDK only in compiled form as part of such a game bundle delivered to Playus.

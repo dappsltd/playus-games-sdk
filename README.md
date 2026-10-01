@@ -80,6 +80,22 @@ Engine helpers: `@playus.club/games-sdk/phaser`, `@playus.club/games-sdk/babylon
 
 ## Sound Previews
 
+The SDK also includes 14 synthesized sounds, generated locally with Web Audio.
+They use the same `sound.play()` API and host mute state as the existing samples;
+no preloading, sound files, or runtime downloads are needed:
+
+```ts
+sound.play('tap');
+sound.play('select', { theme: 'bubble', emphasis: 'subtle', volume: 0.6 });
+sound.play('success', { emphasis: 'strong' });
+sound.play('count', { duration: 900, direction: 'back' });
+```
+
+Open **Synth sound palette** in the local simulator to audition every cue,
+theme, and emphasis and see its `sound.play()` call. See [the sound API](docs/game-contract.md#sounds)
+for the full palette and options. The sound settings originate from Cuelume
+under MIT; see [third-party notices](THIRD_PARTY_NOTICES.md).
+
 The repo includes raw shared game sound previews in `dev-assets/sounds/games/` so developers can audition the Playus sound palette before choosing IDs such as `positive-input`, `pop-sharp`, or `pop-multi-down`.
 
 Those files are repository-only reference assets. They are excluded from the npm package; games should use the SDK sound ids through `sound.preload(...)` and `sound.play(...)`.
@@ -138,3 +154,5 @@ Playus handles signing, hosting, game metadata, score type assignment, leaderboa
 ## License
 
 Source-available under the [Playus Games SDK License](LICENSE.md): free to use for building and delivering games for the Playus apps; not for use in other apps or platforms.
+
+The bundled Cuelume sound definitions remain MIT-licensed; see [third-party notices](THIRD_PARTY_NOTICES.md).
