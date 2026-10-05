@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.12
+
+- Added 14 offline Web Audio synth cues with four themes, emphasis, direction, pitch, and count-duration options, using the existing sound manager and host mute state.
+- Added a synth audition palette to the local host simulator and tests for audio lifecycle, mute, bounded voices, and compatibility with sample sounds.
+- Retained the Cuelume MIT notice in the package and compiled sound manager.
+- Hardened transparent canvas/engine surfaces and added layout sizing helpers for responsive game HUDs.
+- Excluded the simulator's `public/` bundle drop zone from the SDK library build and npm package.
+
 ## 0.1.11
 
 - Added Rebounded as the primary Playus display font, with Unbounded retained as a compatibility fallback.

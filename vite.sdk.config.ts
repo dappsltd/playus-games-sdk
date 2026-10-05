@@ -7,6 +7,7 @@ export default defineConfig({
   build: {
     outDir: 'dist/sdk',
     emptyOutDir: true,
+    copyPublicDir: false,
     lib: {
       entry: {
         index: sdkEntry('./src/playus/index.ts'),
