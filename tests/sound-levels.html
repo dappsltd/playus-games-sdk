@@ -1,0 +1,68 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Synth level regression check</title>
+<pre>Rendering synth checks…</pre>
+<script type="module">
+// Run with `npm run dev`, then open /tests/sound-levels.html.
+import { SoundSynth } from '../src/playus/sounds/synth.ts';
+import { synthSoundIds, soundThemes } from '../src/playus/sounds/recipes.ts';
+
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
+async function peak(cues, warm = true) {
+  const context = new OfflineAudioContext(2, 48000 * 3, 48000);
+  const synth = new SoundSynth(context, context.destination);
+  let rendered;
+  if (warm) {
+    const paused = context.suspend(0.1);
+    rendered = context.startRendering();
+    await paused;
+  }
+  for (const [id, options] of cues) synth.play(id, options);
+  if (warm) await context.resume();
+  else rendered = context.startRendering();
+  const buffer = await rendered;
+  let peak = 0;
+  for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+    for (const sample of buffer.getChannelData(channel)) {
+      assert(Number.isFinite(sample), 'Finite audio samples');
+      peak = Math.max(peak, Math.abs(sample));
+    }
+  }
+  assert(peak > 0, 'Audible output');
+  assert(peak <= 0.950001, `Peak ceiling exceeded: ${peak}`);
+  return 20 * Math.log10(peak);
+}
+
+try {
+  let variants = 0;
+  const levels = {};
+  for (const theme of soundThemes) for (const id of synthSoundIds) {
+    for (const emphasis of ['subtle', 'normal', 'strong']) {
+      const db = await peak([[id, { theme, emphasis, volume: 1 }]]);
+      if (emphasis === 'normal') levels[`${theme}/${id}`] = db;
+      variants++;
+    }
+  }
+  for (const theme of soundThemes) {
+    for (const id of ['tap', 'type', 'loading']) {
+      assert(levels[`${theme}/${id}`] < levels[`${theme}/success`] - 3,
+        `${theme}/${id} should be quieter than success`);
+    }
+  }
+  for (const [id, theme, minimum] of [['tap', 'bubble', -18], ['select', 'bubble', -12], ['toggle', 'mech', -18], ['success', 'default', -8]]) {
+    assert(levels[`${theme}/${id}`] > minimum, `${theme}/${id} is too quiet`);
+  }
+  const overlapping = synthSoundIds.map(id => [id, { theme: 'mech', emphasis: 'strong', volume: 1 }]);
+  await peak([...overlapping, ...overlapping]); // Rapid repeats and different simultaneous cues.
+  await peak(overlapping, false); // First sound on a fresh audio context.
+  window.soundLevelsResult = { variants, levels };
+  document.querySelector('pre').textContent = `PASS\n${JSON.stringify(window.soundLevelsResult, null, 2)}`;
+} catch (error) {
+  window.soundLevelsError = String(error);
+  document.querySelector('pre').textContent = `FAIL\n${error}`;
+  throw error;
+}
+</script>

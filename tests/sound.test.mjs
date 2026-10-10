@@ -63,6 +63,7 @@ class AudioContext {
   createBufferSource() { return this.node('source'); }
   createBiquadFilter() { return this.node('filter'); }
   createDynamicsCompressor() { return this.node('compressor'); }
+  createWaveShaper() { return this.node('waveshaper'); }
   createConvolver() { return this.node('convolver'); }
   createBuffer(channels, length, rate) {
     const data = Array.from({ length: channels }, () => new Float32Array(length));

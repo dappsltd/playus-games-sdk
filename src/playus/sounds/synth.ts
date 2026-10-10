@@ -7,6 +7,24 @@ export function isSynthSoundId(id: string): id is SynthSoundId {
 
 const randomFactor = (amount: number) => 1 + (Math.random() * 2 - 1) * amount;
 
+// Frequent input stays quieter than outcomes. Loading/count recipes are already soft.
+const cueLevels: Record<SynthSoundId, number> = {
+  tap: 0.35,
+  type: 0.3,
+  select: 0.65,
+  toggle: 0.45,
+  open: 0.55,
+  close: 0.55,
+  navigate: 0.45,
+  success: 1,
+  error: 0.9,
+  warning: 0.85,
+  loading: 1,
+  ready: 0.8,
+  attention: 1,
+  count: 0.8,
+};
+
 /** Renders bundled recipes on the SoundManager's AudioContext and mute output. */
 export class SoundSynth {
   private readonly output: GainNode;
@@ -16,14 +34,18 @@ export class SoundSynth {
 
   constructor(private readonly context: AudioContext, destination: AudioNode) {
     this.output = context.createGain();
-    this.output.gain.value = 4;
+    // +18 dB over the original palette to match the shared game samples.
+    this.output.gain.value = 32;
     const limiter = context.createDynamicsCompressor();
     limiter.threshold.value = -8;
     limiter.knee.value = 6;
     limiter.ratio.value = 12;
     limiter.attack.value = 0.002;
     limiter.release.value = 0.08;
-    this.output.connect(limiter).connect(destination);
+    // The compressor can overshoot on short attacks; keep those below full scale.
+    const ceiling = context.createWaveShaper();
+    ceiling.curve = new Float32Array([-0.95, 0, 0.95]);
+    this.output.connect(limiter).connect(ceiling).connect(destination);
 
     // Reuse two seconds of noise; each strike starts at a different offset.
     this.noise = context.createBuffer(1, context.sampleRate * 2, context.sampleRate);
@@ -61,7 +83,7 @@ export class SoundSynth {
     const recipe = soundRecipes[theme][id];
     const now = this.context.currentTime;
     const master = this.context.createGain();
-    master.gain.value = recipe.masterGain * (options.volume ?? 1);
+    master.gain.value = recipe.masterGain * cueLevels[id] * (options.volume ?? 1);
     master.connect(this.output);
     const send = this.context.createGain();
     send.gain.value = 0.08 * (recipe.room ?? 1);

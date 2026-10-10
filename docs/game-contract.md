@@ -245,6 +245,12 @@ These cues are bundled sound recipes, synthesized on the same AudioContext as
 the sample sounds. They work offline and follow native mute automatically.
 `preload()` accepts mixed sample and synth IDs, but synth IDs need no preload.
 Play from the first user interaction onward; browser autoplay rules still apply.
+The synth output is calibrated toward the shared game samples, with a compressor
+and a fixed peak ceiling for overlapping effects. `volume` remains a relative
+gain; perceived loudness still varies with the cue, theme, and emphasis.
+Frequent input cues (`tap`, `type`, `toggle`) are quieter than selection and
+movement cues; outcomes and alerts remain prominent. `loading` and `count`
+retain their naturally softer recipes. Game-specific `volume` multiplies these levels.
 
 ```ts
 sound.play('tap');
