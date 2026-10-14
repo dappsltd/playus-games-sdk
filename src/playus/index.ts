@@ -7,6 +7,7 @@ export {
 export { createSeededRandom, seededBetween, seededFloatBetween, seededShuffle } from './random';
 export { getGameSeed, getUrlParam } from './url-params';
 export { clampGameplayDeltaMs, clampGameplayDeltaSeconds } from './timing';
+export { finishAfter } from './finish-after';
 export { refreshOnFontsLoaded } from './fonts';
 export type { RefreshOnFontsLoadedOptions } from './fonts';
 export { observeCanvasSize } from './canvas';

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.14
+
+- Added `finishAfter(delayMs, finish)`: sends the native finish after a short final-feedback beat, or immediately when the app goes to the background after the outcome is fixed, so closing the app cannot discard a lost attempt. Backgrounding during normal play is unaffected. Returns a cancel function.
+- Documented finish-delay budgets in the game contract.
+
 ## 0.1.12
 
 - Added 14 offline Web Audio synth cues with four themes, emphasis, direction, pitch, and count-duration options, using the existing sound manager and host mute state.

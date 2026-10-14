@@ -76,6 +76,12 @@ When the run ends:
 nativeBridge.game.finished(finalScore);
 ```
 
+If the player needs a short final beat first (a fall, a flash), keep it brief and let `finishAfter` send the finish; it finishes immediately if the app is backgrounded after the outcome is fixed:
+
+```ts
+finishAfter(400, () => nativeBridge.game.finished(finalScore));
+```
+
 Engine helpers: `@playus.club/games-sdk/phaser`, `@playus.club/games-sdk/babylon`, and `@playus.club/games-sdk/three` provide ready-made containers and configs. See [the game contract](docs/game-contract.md) for the full runtime rules.
 
 ## Sound Previews

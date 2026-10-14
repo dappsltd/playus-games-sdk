@@ -139,6 +139,20 @@ Choose and document one post-finish rendering mode:
 - **Static:** after any brief final feedback, stop or pause the engine/requestAnimationFrame render loop before calling `finished()`. The last rendered frame can remain visible behind the native result UI without consuming frame time.
 - **Ambient:** continued rendering is allowed when a small result-state animation materially improves the presentation. Keep only that intentional, cheap, bounded cosmetic motion. Stop gameplay input and simulation, physics, spawns, scoring and score bridge updates, unrelated timers/tweens, looping audio/haptics, and any allocation or collection growth. Do not keep the full live game simulation running as ambience.
 
+### Short Final Feedback And `finishAfter`
+
+Until `finished()` reaches the host, closing the app discards the attempt instead of consuming it. Keep the gap between the moment the player sees the outcome and `finished()` short: up to 0.5 s for action or crash feedback, up to 1 s for brief result feedback, longer only for a deliberate result reveal.
+
+Use `finishAfter(delayMs, finish)` for that beat. It calls `finish` once after the delay, or immediately if the app goes to the background after the outcome is fixed. Backgrounding before `finishAfter()` was called (a phone call or system dialog during play) is unaffected. Longer cosmetic outros, such as a fall or a camera pull-back, should keep rendering behind the native overlay (Ambient mode) instead of delaying `finished()`.
+
+```ts
+import { finishAfter, nativeBridge } from '@playus.club/games-sdk';
+
+finishAfter(400, () => nativeBridge.game.finished(score));
+```
+
+It returns a cancel function for dispose paths.
+
 In both modes, no gameplay or score state may change after the outcome is fixed. Browser lifecycle handling such as `visibilitychange` should also suspend rendering and nonessential work while the document is hidden.
 
 ## Localization
