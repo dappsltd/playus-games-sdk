@@ -31,6 +31,7 @@ Content and fairness:
 - Gameplay-affecting randomness uses seeded random.
 - Gameplay speed is based on elapsed time (clamped deltas), not frame count.
 - Canvas backing stores and gameplay projection update when their actual container changes size.
+- During play, no HTML layer paints above gameplay beyond small HUD elements: no `outline` or frame on the canvas container, no viewport-sized overlays, washes, or flashes (see "HTML Over The Game Surface (Android)" in `game-contract.md`).
 - In-game text and start overlays support `en`, `de`, `es`, `fr`, `it`, `tr`, and `ar`.
 - Host mute state is respected: SDK sounds and `playUrl` handle it automatically; own audio engines subscribe via `sound.onEnabledChange`.
 - The framework/runtime is lean enough for mobile WebViews.

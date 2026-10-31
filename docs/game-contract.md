@@ -411,6 +411,22 @@ An opaque renderer covering the full viewport needs no HTML background: omit the
 
 Preserve the intended HUD anchor: screen-edge scores belong on the outer game root, while board-relative controls belong in the canvas viewport. `observeLayoutSize(anchor)` supplies `--game-width-unit` and `--game-height-unit` (one percent of the measured content width/height) without CSS size containment. For example, `font-size: min(calc(13 * var(--game-width-unit)), calc(12 * var(--game-height-unit)))`. Call the returned function when disposing the HUD; observation also stops on non-persisted page unload. Pure groups of positioned HUD children can use `display: contents` to avoid an unnecessary full-viewport paint box.
 
+### HTML Over The Game Surface (Android)
+
+Some Android WebViews lose game content below HTML that is composited above it. Chromium draws a page as composited layers made of tiles. On affected devices, wherever a higher layer draws a non-empty tile, everything from lower layers in that tile disappears and the native app background shows through. Canvas 2D, WebGL, and DOM games are all affected. It depends on the device and WebView version, so it usually does not reproduce on test devices.
+
+Keep painted HTML layers off active gameplay:
+
+- Do not put an `outline` or a frame element on the canvas container. An outline paints above the canvas and hides the whole canvas on affected devices. To mark play bounds, paint them behind the canvas, for example `box-shadow: 0 0 0 1px rgba(255,255,255,.28)` on the canvas container, or draw them in the engine.
+- Do not show viewport-sized HTML frames, vignettes, gradients, side washes, damage flashes, or backdrops during play. Draw these effects in the engine. Full-screen dimming is fine for the start overlay, where gameplay may be hidden.
+- Keep HUD elements small, with tight shadows and glows (blur enlarges the affected area), and away from moving gameplay where the layout allows. Draw HUD in the engine when it must sit on top of moving gameplay.
+- Avoid `will-change` and long-running CSS animations or transitions on elements over gameplay. Every animated element gets its own layer for as long as it runs. For looping pulses on DOM game pieces, animate `color` or `border-color`; move DOM pieces with `top`/`left` instead of transforms.
+- Do not wrap animated elements in `overflow: hidden` with `border-radius`, `clip-path`, `mask`, group `opacity`, `filter`, or `mix-blend-mode`. Chromium renders those offscreen, and on affected devices the offscreen surface appears black.
+- Transparent wrappers that paint nothing, including `display: contents`, are fine.
+- Match the native background (`backgroundGradientTop` / `backgroundGradientBottom`) to the game background behind the HUD, so unavoidable small cutouts are invisible.
+
+To check, use Chrome DevTools > Layers or Rendering > Layer borders with mobile emulation: after the start overlay is gone, no layer drawn above the game surface should cover gameplay beyond the HUD elements themselves.
+
 SDK touch hints expose `.playus-touch-hint` for the transparent wrapper and `.playus-touch-hint__circle` for the explicitly colored circles. Target these classes instead of relying on unnamed nested `div` elements.
 
 Fonts: `styles.css` provides `Rebounded` (the primary display font with Latin, Cyrillic, Greek and Arabic coverage), `Unbounded` as a compatibility fallback, plus `Space Grotesk` and `Quicksand` for secondary text. Native and remote faces are kept separate so the fallback order is native Rebounded, native Unbounded, remote Rebounded, then remote Unbounded. Use `Rebounded, Unbounded, ReboundedRemote, UnboundedRemote, system-ui, sans-serif` for canvas-rendered display text. Use `Space Grotesk, Rebounded, Unbounded, ReboundedRemote, UnboundedRemote, system-ui, sans-serif` or the equivalent Quicksand stack for secondary localized text. Custom fonts are fine too — bundle them with your game (woff2, keep them small) and load them with your own `@font-face`.

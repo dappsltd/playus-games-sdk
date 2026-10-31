@@ -41,6 +41,7 @@ Typical findings:
 - Optional generated model URLs that should not become required runtime fetches unless the model assets are bundled with the game.
 - Random level generation that needs to become seeded for group fairness.
 - Audio that is either generic ambience or gameplay feedback.
+- HTML decoration on top of the game canvas or board: CSS `outline` or border frames on the canvas container, full-screen vignettes, glows, damage flashes, side washes, or animated HUD over gameplay. On some Android WebViews these hide the game content below them. See "HTML Over The Game Surface (Android)" in `docs/game-contract.md`.
 
 Good Playus port decisions:
 
@@ -53,6 +54,7 @@ Good Playus port decisions:
 - Remove local highscores and attempt counters. Playus owns attempts, rankings, and result UI.
 - Use seeded random from `createSeededRandom(getGameSeed())` for gameplay-affecting content.
 - Send meaningful live score updates and the precise final score.
+- Move frames, vignettes, washes, flashes, and in-world indicators that overlap gameplay into the engine. Paint play bounds behind the canvas, for example with a `box-shadow` ring on its container, never as an `outline` or overlay frame. Keep HTML HUD small and away from moving gameplay.
 
 ## Porting Checklist
 
@@ -230,6 +232,7 @@ Review:
 - Are object allocations low in hot update loops?
 - Does startup avoid heavy noncritical work?
 - Are explicit controls padded away from fullscreen device edges when practical, without blocking normal gameplay input?
+- After the start overlay is dismissed, is gameplay free of HTML layers that paint above it (no `outline` on the canvas container, no viewport-sized overlays, only small HUD)? Check with Chrome DevTools > Layers in mobile emulation.
 
 ### 8. Delivery Follow-Up
 
