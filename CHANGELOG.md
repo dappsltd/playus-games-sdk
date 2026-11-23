@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.15
+
+- Added an opt-in browser-only `hostReady` input for cross-origin preview hosts. Native bridge protocol v3 and existing game integrations are unchanged.
+
 ## 0.1.14
 
 - Added `finishAfter(delayMs, finish)`: sends the native finish after a short final-feedback beat, or immediately when the app goes to the background after the outcome is fixed, so closing the app cannot discard a lost attempt. Backgrounding during normal play is unaffected. Returns a cancel function.
