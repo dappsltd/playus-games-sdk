@@ -96,28 +96,12 @@ export function roundScoreForBridge(score: number): number {
 
 export class NativeBridge {
   private gameId?: string;
-  private browserHostOrigin?: string;
   private readonly handshakeId = createHandshakeId();
   private pendingScore: number | null = null;
   private scoreTimer: ReturnType<typeof setTimeout> | null = null;
 
-  configure(options: { gameId?: string; browserHostOrigin?: string } = {}) {
+  configure(options: { gameId?: string } = {}) {
     this.gameId = options.gameId ?? this.gameId;
-    const { browserHostOrigin } = options;
-    if (browserHostOrigin === undefined) return;
-
-    this.browserHostOrigin = undefined;
-    if (!window.parent || window.parent === window || this.hasNativeTransport()) return;
-    if (typeof browserHostOrigin !== 'string' || !browserHostOrigin.startsWith('https://')) return;
-
-    // An exact serialized HTTPS origin is required, not a URL or a wildcard.
-    try {
-      if (new URL(browserHostOrigin).origin !== browserHostOrigin) return;
-    } catch {
-      return;
-    }
-    this.browserHostOrigin = browserHostOrigin;
-    window.addEventListener('message', this.onBrowserHostReady);
   }
 
   private postToNative(event: any): NativePostResult {
@@ -180,36 +164,35 @@ export class NativeBridge {
     return this.postDetailed(type, payload).success;
   }
 
-  private handleHostReady(payload?: HostReadyPayload): string {
-    if (payload?.handshakeId !== this.handshakeId) {
-      // eslint-disable-next-line no-console
-      console.warn('NativeBridge hostReady ignored:', payload);
-      return encodeHostReadyEvaluationResult({
-        success: false,
-        error: 'handshake_mismatch',
-      });
-    }
-
-    // eslint-disable-next-line no-console
-    console.info('NativeBridge hostReady:', payload);
-    const postResult = this.postDetailed(EVENTS.HOST_READY_ACK, {
-      handshakeId: this.handshakeId,
-      bridgeVersion: BRIDGE_VERSION,
-    });
-
-    if (!postResult.success) {
-      // hostReadyAck is observability-only. The game received hostReady, so
-      // native ack delivery must not block the game from starting.
-      // eslint-disable-next-line no-console
-      console.warn('NativeBridge hostReadyAck post failed:', postResult.error);
-    }
-
-    return encodeHostReadyEvaluationResult({ success: true });
-  }
-
   private installGameAPI() {
+    const self = this;
     (window as any).gameAPI = {
-      hostReady: (payload?: HostReadyPayload) => this.handleHostReady(payload),
+      hostReady(payload?: HostReadyPayload): string {
+        if (payload?.handshakeId !== self.handshakeId) {
+          // eslint-disable-next-line no-console
+          console.warn('NativeBridge hostReady ignored:', payload);
+          return encodeHostReadyEvaluationResult({
+            success: false,
+            error: 'handshake_mismatch',
+          });
+        }
+
+        // eslint-disable-next-line no-console
+        console.info('NativeBridge hostReady:', payload);
+        const postResult = self.postDetailed(EVENTS.HOST_READY_ACK, {
+          handshakeId: self.handshakeId,
+          bridgeVersion: BRIDGE_VERSION,
+        });
+
+        if (!postResult.success) {
+          // hostReadyAck is observability-only. The game received hostReady, so
+          // native ack delivery must not block the game from starting.
+          // eslint-disable-next-line no-console
+          console.warn('NativeBridge hostReadyAck post failed:', postResult.error);
+        }
+
+        return encodeHostReadyEvaluationResult({ success: true });
+      },
       setMuted(muted: boolean) {
         sound.setEnabled(!muted);
       },
@@ -226,20 +209,6 @@ export class NativeBridge {
       this.pendingScore = null;
     }
   }
-
-  private hasNativeTransport(): boolean {
-    const ios = (window as any).webkit?.messageHandlers?.[NATIVE_HANDLER_NAME];
-    const android = (window as any).gameEvent;
-    return typeof ios?.postMessage === 'function' || typeof android?.handleMessage === 'function';
-  }
-
-  private readonly onBrowserHostReady = (event: MessageEvent) => {
-    if (event.source !== window.parent || event.origin !== this.browserHostOrigin) return;
-    if (event.data?.type !== 'hostReady' || typeof event.data.handshakeId !== 'string') return;
-    if (this.hasNativeTransport()) return;
-
-    this.handleHostReady({ handshakeId: event.data.handshakeId });
-  };
 
   attach() {
     this.installGameAPI();

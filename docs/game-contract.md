@@ -71,8 +71,6 @@ Good `ready()` timing examples:
 
 Do not call `ready()` while the first playable frame still depends on a pending fetch.
 
-The optional browser input is off by default. In a browser integration, call `nativeBridge.configure({ browserHostOrigin: 'https://host.example' })` before `ready()` with an exact HTTPS origin from trusted deployment configuration. Do not derive it from query parameters, URL fragments, referrers, or messages. That direct parent can send `{ type: 'hostReady', handshakeId }` with the game's exact origin as `targetOrigin`. The SDK checks the handshake ID and sends `hostReadyAck` over the existing browser fallback. Native hosts and the local simulator keep calling `gameAPI.hostReady()` directly.
-
 ## Started And The Start Overlay
 
 Call `started()` when the run actually begins — usually the first real player input after the start overlay is dismissed.
