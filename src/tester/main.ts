@@ -1,4 +1,5 @@
 import './styles.css';
+import { SUPPORTED_LANGUAGES } from '../playus/i18n';
 import { BridgeEmulator, type HostReadyPayload, type TesterEvent } from './bridge-emulator';
 import { sound, soundThemes, synthSoundIds, type SoundEmphasis, type SoundTheme, type SynthSoundId } from '../playus/sound';
 
@@ -52,11 +53,7 @@ app.innerHTML = `
       <label class="field">
         <span>Language</span>
         <select id="languageSelect">
-          <option value="en">EN</option>
-          <option value="de">DE</option>
-          <option value="fr">FR</option>
-          <option value="es">ES</option>
-          <option value="it">IT</option>
+          ${SUPPORTED_LANGUAGES.map(language => `<option value="${language}">${language.toUpperCase()}</option>`).join('')}
         </select>
       </label>
 

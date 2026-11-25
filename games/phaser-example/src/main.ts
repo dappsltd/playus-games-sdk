@@ -46,6 +46,7 @@ const t = createTranslator({
     it: 'Scoppia più bolle che puoi',
     tr: 'Patlatabildiğin kadar balon patlat',
     ar: 'فرقع أكبر عدد ممكن من الفقاعات',
+    pt: 'Rebenta o máximo de bolhas que conseguires',
   },
 });
 

@@ -38,6 +38,7 @@ const t = createTranslator({
     it: 'Tocca il cubo quando diventa verde',
     tr: 'Küp yeşile döndüğünde dokun',
     ar: 'المس المكعب عندما يتحول إلى اللون الأخضر',
+    pt: 'Toca no cubo quando ficar verde',
   },
   wait: {
     en: 'Wait…',
@@ -47,6 +48,7 @@ const t = createTranslator({
     it: 'Aspetta…',
     tr: 'Bekle…',
     ar: 'انتظر…',
+    pt: 'Espera…',
   },
   go: {
     en: 'Now!',
@@ -56,6 +58,7 @@ const t = createTranslator({
     it: 'Ora!',
     tr: 'Şimdi!',
     ar: 'الآن!',
+    pt: 'Agora!',
   },
 });
 

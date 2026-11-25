@@ -87,6 +87,7 @@ createTapToStartOverlay({
     it: 'Tocca per iniziare',
     tr: 'Başlamak için dokun',
     ar: 'المس للبدء',
+    pt: 'Toca para começar',
   },
   mode: 'dismiss-only',
   touchHint: 'tap',
@@ -179,6 +180,7 @@ const translations = {
     it: 'Tocca il bersaglio',
     tr: 'Hedefe dokun',
     ar: 'المس الهدف',
+    pt: 'Toca no alvo',
   },
 } satisfies TranslationDict<'hint'>;
 
@@ -186,7 +188,7 @@ const t = createTranslator(translations);
 t('hint');
 ```
 
-Required languages: `en`, `de`, `es`, `fr`, `it`, `tr`, `ar`. Regional values such as `tr-TR` and `ar-SA` are normalized to their supported base language. Unknown or missing languages fall back to English. Keep text short enough to fit every supported language.
+Required languages: `en`, `de`, `es`, `fr`, `it`, `tr`, `ar`, `pt`. Regional values such as `tr-TR` and `ar-SA` are normalized to their supported base language. Use `#lang=pt` for Portuguese; regional Portuguese tags also resolve to the single `pt` catalog. Unknown or missing languages fall back to English. Keep text short enough to fit every supported language.
 
 ## Seeded Random
 

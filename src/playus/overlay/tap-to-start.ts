@@ -39,6 +39,7 @@ export function createTapToStartOverlay(options: TapToStartOptions): TapToStartO
     it: 'Tocca per iniziare',
     tr: 'Başlamak için dokun',
     ar: 'المس للبدء',
+    pt: 'Toca para começar',
   }, language);
   label.lang = language;
   label.dir = getLanguageDirection(language);

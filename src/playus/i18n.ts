@@ -3,7 +3,7 @@ import { getUrlParam } from './url-params';
 /**
  * Supported languages - single source of truth
  */
-export const SUPPORTED_LANGUAGES = ['en', 'de', 'es', 'fr', 'it', 'tr', 'ar'] as const;
+export const SUPPORTED_LANGUAGES = ['en', 'de', 'es', 'fr', 'it', 'tr', 'ar', 'pt'] as const;
 export type Language = typeof SUPPORTED_LANGUAGES[number];
 export const DEFAULT_LANGUAGE: Language = 'en';
 export type TextDirection = 'ltr' | 'rtl';
@@ -20,7 +20,7 @@ export type TranslationDict<Keys extends string> = {
 
 /**
  * Get current language from URL parameter
- * Reads ?lang=de from URL (follows debug.ts pattern)
+ * Reads #lang=de first, then ?lang=de for backward compatibility
  *
  * @returns Language code or default ('en')
  *

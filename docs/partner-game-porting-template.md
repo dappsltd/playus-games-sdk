@@ -23,7 +23,7 @@ The final game should:
 - Call `ready({ version })`, `started()`, meaningful live `score()` updates, and exactly one `finished(finalScore)`.
 - Avoid custom start screens, game-over screens, restart buttons, highscore panels, settings, menus, analytics, and persistent browser storage.
 - Bundle or generate required assets locally. Do not require runtime network fetches.
-- Keep visible text short and localized for `en`, `de`, `es`, `fr`, `it`, `tr`, and `ar`.
+- Keep visible text short and localized for `en`, `de`, `es`, `fr`, `it`, `tr`, `ar`, and `pt`.
 
 ## Common Port Findings
 
@@ -241,7 +241,7 @@ After implementation:
 - Test the production bundle in the local Playus host simulator, served from `public/<game-id>/`.
 - Verify the host simulator receives `hostReadyAck`.
 - Verify `ready`, `started`, live `score`, and `finished` arrive in the expected order.
-- Verify all required text works for `en`, `de`, `es`, `fr`, `it`, `tr`, and `ar`.
+- Verify all required text works for `en`, `de`, `es`, `fr`, `it`, `tr`, `ar`, and `pt`.
 - Check the final score value against the in-game UI and intended Playus score type.
 - Review `docs/submission-checklist.md`.
 

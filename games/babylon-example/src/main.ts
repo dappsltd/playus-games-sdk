@@ -49,6 +49,7 @@ const t = createTranslator({
     it: 'Tocca il cubo diverso',
     tr: 'Farklı küpe dokun',
     ar: 'المس المكعب المختلف',
+    pt: 'Toca no cubo diferente',
   },
   level: {
     en: 'Level {n}',
@@ -58,6 +59,7 @@ const t = createTranslator({
     it: 'Livello {n}',
     tr: 'Seviye {n}',
     ar: 'المستوى {n}',
+    pt: 'Nível {n}',
   },
 });
 
